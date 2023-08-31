@@ -1,0 +1,29 @@
+{
+  "name": "whatsapp-api",
+  "version": "1.0.0",
+  "description": "Whatsapp API by Mahdian",
+  "main": "app-multiple-accounts.js",
+  "scripts": {
+    "start": "node app-multiple-accounts.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "whatsapp-api",
+    "node.js"
+  ],
+  "author": "Mahdian",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.2.1",
+    "express-validator": "^6.9.2",
+    "nodemon": "^3.0.1",
+    "npm": "^9.6.7",
+    "qrcode": "^1.4.4",
+    "qrcode-terminal": "^0.12.0",
+    "socket.io": "^4.5.4",
+    "update": "^0.7.4",
+    "whatsapp-web.js": "^1.22.1"
+  }
+}

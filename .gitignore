@@ -1,0 +1,7 @@
+.wwebjs_*
+/node_modules
+/node_modules/*
+npm-debug.log
+package-lock.json
+whatsapp-sessions.json
+.vscode/sftp.json
