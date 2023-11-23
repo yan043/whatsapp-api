@@ -65,7 +65,8 @@ const createSession = function (id, description) {
   const client = new Client({
     restartOnAuthFail: true,
     puppeteer: {
-      headless: false,
+      headless: true,
+      handleSIGINT: false,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
