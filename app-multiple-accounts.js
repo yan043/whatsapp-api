@@ -63,19 +63,23 @@ const getSessionsFile = function () {
 const createSession = function (id, description) {
   console.log("Creating session: " + id);
   const client = new Client({
-    restartOnAuthFail: true,
+    restartOnAuthFail: false,
     puppeteer: {
       headless: false,
-      // handleSIGINT: false,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
+        "--disable-web-security",
+        "--disable-gpu",
+        "--hide-scrollbars",
+        "--disable-cache",
+        "--disable-application-cache",
+        "--disable-gpu-driver-bug-workarounds",
         "--disable-accelerated-2d-canvas",
         "--no-first-run",
         "--no-zygote",
         "--single-process", // <- this one doesn't works in Windows
-        "--disable-gpu",
       ],
     },
     authStrategy: new LocalAuth({
