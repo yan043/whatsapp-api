@@ -63,7 +63,7 @@ const getSessionsFile = function () {
 const createSession = function (id, description) {
   console.log("Creating session: " + id);
   const client = new Client({
-    restartOnAuthFail: false,
+    restartOnAuthFail: true,
     puppeteer: {
       headless: true,
       args: [
