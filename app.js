@@ -1,6 +1,5 @@
-const { Client, MessageMedia } = require("whatsapp-web.js");
+const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const socketIO = require("socket.io");
 const qrcode = require("qrcode");
 const http = require("http");
@@ -8,7 +7,7 @@ const fs = require("fs");
 const { phoneNumberFormatter } = require("./helpers/formatter");
 const fileUpload = require("express-fileupload");
 const axios = require("axios");
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 6969;
 
 const app = express();
 const server = http.createServer(app);
@@ -20,154 +19,233 @@ app.use(
     extended: true,
   })
 );
+
 app.use(
   fileUpload({
-    debug: true,
+    debug: false,
   })
 );
 
-const SESSION_FILE_PATH = "./whatsapp-session.json";
-let sessionCfg;
-if (fs.existsSync(SESSION_FILE_PATH)) {
-  sessionCfg = require(SESSION_FILE_PATH);
-}
-
 app.get("/", (req, res) => {
-  res.sendFile("index.html", { root: __dirname });
+  res.sendFile("index-multiple-accounts.html", {
+    root: __dirname,
+  });
 });
 
-const client = new Client({
-  puppeteer: {
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--no-first-run",
-      "--no-zygote",
-      "--disable-gpu",
-    ],
-  },
-  session: sessionCfg,
-});
+const sessions = [];
+const SESSIONS_FILE = "./whatsapp-sessions.json";
 
-client.on("message", (msg) => {
-  if (msg.body == "!ping") {
-    msg.reply("Pong!");
+const createSessionsFileIfNotExists = function () {
+  if (!fs.existsSync(SESSIONS_FILE)) {
+    try {
+      fs.writeFileSync(SESSIONS_FILE, JSON.stringify([]));
+      console.log("Sessions file created successfully.");
+    } catch (err) {
+      console.log("Failed to create sessions file: ", err);
+    }
   }
-});
+};
 
-client.initialize();
+createSessionsFileIfNotExists();
 
-// Socket IO
-io.on("connection", function (socket) {
-  socket.emit("message", "Connecting ...");
+const setSessionsFile = function (sessions) {
+  fs.writeFile(SESSIONS_FILE, JSON.stringify(sessions), function (err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+};
+
+const getSessionsFile = function () {
+  return JSON.parse(fs.readFileSync(SESSIONS_FILE));
+};
+
+const createSession = function (id, description) {
+  console.log("Creating session: " + id);
+  const client = new Client({
+    restartOnAuthFail: true,
+    puppeteer: {
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-web-security",
+        "--disable-gpu",
+        "--hide-scrollbars",
+        "--disable-cache",
+        "--disable-application-cache",
+        "--disable-gpu-driver-bug-workarounds",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process", // <- this one doesn't works in Windows
+      ],
+    },
+    authStrategy: new LocalAuth({
+      clientId: id,
+    }),
+  });
+
+  client.initialize();
 
   client.on("qr", (qr) => {
     console.log("QR RECEIVED", qr);
     qrcode.toDataURL(qr, (err, url) => {
-      socket.emit("qr", url);
-      socket.emit("message", "QR Received, Scan Please!");
+      io.emit("qr", { id: id, src: url });
+      io.emit("message", { id: id, text: "QR Code received, scan please!" });
     });
   });
 
   client.on("ready", () => {
-    socket.emit("ready", "Whatsapp is Ready!");
-    socket.emit("message", "Whatsapp is Ready!");
+    io.emit("ready", { id: id });
+    io.emit("message", { id: id, text: "Whatsapp is ready!" });
+
+    const savedSessions = getSessionsFile();
+    const sessionIndex = savedSessions.findIndex((sess) => sess.id == id);
+    savedSessions[sessionIndex].ready = true;
+    setSessionsFile(savedSessions);
   });
 
-  client.on("authenticated", (session) => {
-    socket.emit("ready", "Whatsapp is Authenticated!");
-    socket.emit("message", "Whatsapp is Authenticated!");
-    console.log("AUTHENTICATED", session);
-    sessionCfg = session;
-    fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function (err) {
-      if (err) {
-        console.error(err);
-      }
+  client.on("authenticated", () => {
+    io.emit("authenticated", { id: id });
+    io.emit("message", { id: id, text: "Whatsapp is authenticated!" });
+  });
+
+  client.on("auth_failure", function () {
+    io.emit("message", { id: id, text: "Auth failure, restarting..." });
+  });
+
+  client.on("disconnected", (reason) => {
+    io.emit("message", { id: id, text: "Whatsapp is disconnected!" });
+    client.destroy();
+    client.initialize();
+
+    const savedSessions = getSessionsFile();
+    const sessionIndex = savedSessions.findIndex((sess) => sess.id == id);
+    savedSessions.splice(sessionIndex, 1);
+    setSessionsFile(savedSessions);
+
+    io.emit("remove-session", id);
+  });
+
+  sessions.push({
+    id: id,
+    description: description,
+    client: client,
+  });
+
+  const savedSessions = getSessionsFile();
+  const sessionIndex = savedSessions.findIndex((sess) => sess.id == id);
+
+  if (sessionIndex == -1) {
+    savedSessions.push({
+      id: id,
+      description: description,
+      ready: false,
     });
+    setSessionsFile(savedSessions);
+  }
+};
+
+const init = function (socket) {
+  const savedSessions = getSessionsFile();
+
+  if (savedSessions.length > 0) {
+    if (socket) {
+      savedSessions.forEach((e, i, arr) => {
+        arr[i].ready = false;
+      });
+
+      socket.emit("init", savedSessions);
+    } else {
+      savedSessions.forEach((sess) => {
+        createSession(sess.id, sess.description);
+      });
+    }
+  }
+};
+
+init();
+
+// Socket IO
+io.on("connection", function (socket) {
+  init(socket);
+
+  socket.on("create-session", function (data) {
+    console.log("Create session: " + data.id);
+    createSession(data.id, data.description);
   });
 });
 
-// Check Registered Number
-const checkRegisteredNumber = async function (number) {
-  const isRegistered = await client.isRegisteredUser(number);
+// Send message
+app.post("/send-message", async (req, res) => {
+  console.log(req);
 
-  return isRegistered;
-};
+  const sender = req.body.sender;
+  const number = phoneNumberFormatter(req.body.number);
+  const message = req.body.message;
 
-// Send Message
-app.post(
-  "/send-message",
-  [body("number").notEmpty(), body("message").notEmpty()],
-  async (req, res) => {
-    const errors = validationResult(req).formatWith(({ msg }) => {
-      return msg;
+  const client = sessions.find((sess) => sess.id == sender)?.client;
+
+  if (!client) {
+    return res.status(422).json({
+      status: false,
+      message: `The sender: ${sender} is not found!`,
     });
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({
-        status: false,
-        message: errors.mapped(),
-      });
-    }
-    const number = phoneNumberFormatter(req.body.number);
-    const message = req.body.message;
-
-    const isRegisteredNumber = await checkRegisteredNumber(number);
-
-    // return back if number is not registered
-    // if (!isRegisteredNumber) {
-    // 	return res.status(422).json({
-    // 		status: false,
-    // 		message: 'The Number in Not Registered WhatsApp'
-    // 	});
-    // }
-
-    // skip if number not registered
-    if (!isRegisteredNumber) {
-      return res.status(200).json({
-        status: true,
-        response: "The Number in Not Registered WhatsApp",
-      });
-    }
-
-    client
-      .sendMessage(number, message)
-      .then((response) => {
-        res.status(200).json({
-          status: true,
-          response: response,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          response: err,
-        });
-      });
   }
-);
 
-// Send Media
+  const isRegisteredNumber = await client.isRegisteredUser(number);
+
+  if (!isRegisteredNumber) {
+    return res.status(422).json({
+      status: false,
+      message: "The number is not registered",
+    });
+  }
+
+  client
+    .sendMessage(number, message)
+    .then((response) => {
+      res.status(200).json({
+        status: true,
+        response: response,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        response: err,
+      });
+    });
+});
+
+// Send media
 app.post("/send-media", async (req, res) => {
+  console.log(req);
+
+  const sender = req.body.sender;
   const number = phoneNumberFormatter(req.body.number);
   const caption = req.body.caption;
   const fileUrl = req.body.file;
 
-  // skip if number not registered
-  const isRegisteredNumber = await checkRegisteredNumber(number);
-  if (!isRegisteredNumber) {
-    return res.status(200).json({
-      status: true,
-      response: "The Number in Not Registered WhatsApp",
+  const client = sessions.find((sess) => sess.id == sender)?.client;
+
+  if (!client) {
+    return res.status(422).json({
+      status: false,
+      message: `The sender: ${sender} is not found!`,
     });
   }
 
-  // const media = MessageMedia.fromFilePath('./image-example.png');
-  // const file = req.files.file;
-  // const media = new MessageMedia(file.mimetype, file.data.toString('base64'), file.name);
+  const isRegisteredNumber = await client.isRegisteredUser(number);
+
+  if (!isRegisteredNumber) {
+    return res.status(422).json({
+      status: false,
+      message: "The number is not registered",
+    });
+  }
 
   let mimetype;
   const attachment = await axios
