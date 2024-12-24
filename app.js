@@ -26,8 +26,10 @@ app.use(
   })
 );
 
+app.use('/assets', express.static('assets'));
+
 app.get("/", (req, res) => {
-  res.sendFile("index-multiple-accounts.html", {
+  res.sendFile("index.html", {
     root: __dirname,
   });
 });
@@ -79,7 +81,7 @@ const createSession = function (id, description) {
         "--disable-accelerated-2d-canvas",
         "--no-first-run",
         "--no-zygote",
-        "--single-process", // <- this one doesn't works in Windows
+        "--single-process",
       ],
     },
     authStrategy: new LocalAuth({
@@ -168,7 +170,6 @@ const init = function (socket) {
 
 init();
 
-// Socket IO
 io.on("connection", function (socket) {
   init(socket);
 
@@ -178,7 +179,6 @@ io.on("connection", function (socket) {
   });
 });
 
-// Send message
 app.post("/send-message", async (req, res) => {
   console.log(req);
 

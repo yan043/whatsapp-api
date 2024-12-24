@@ -51,14 +51,12 @@
     />
   </head>
   <body>
-    <marquee
-      >You can support the maintainer of this project through
+    <marquee>
+      You can support the maintainer of this project through
       <i><b style="color: red">LinkAja!</b></i>
       <b>+6285248804480</b> but Thanks Before :)
     </marquee>
-    <div
-      class="login-wrap d-flex align-items-center flex-wrap justify-content-center"
-    >
+    <div class="login-wrap d-flex align-items-center flex-wrap justify-content-center">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6">
@@ -71,7 +69,7 @@
           <div class="col-md-6" id="app">
             <div class="login-box bg-white box-shadow border-radius-10">
               <div class="login-title">
-                <h2 class="text-center text-info">Create Session</h2>
+                <h2 class="text-center text-info">Device Session</h2>
               </div>
               <div class="form-container">
                 <div class="input-group custom">
@@ -89,7 +87,7 @@
                     cols="48"
                     class="form-control client-description"
                     id="client-description"
-                    placeholder="Masukkan Deskripsi"
+                    placeholder="Enter a Description"
                     required
                   ></textarea>
                 </div>
@@ -97,13 +95,15 @@
                   <div class="col-12">
                     <div class="input-group mb-0">
                       <button
-                        class="btn btn-info btn-lg btn-block add-client-btn"
-                      >
-                        Add Client
+                        class="btn btn-info btn-lg btn-block add-client-btn">
+                        Create
                       </button>
                     </div>
                   </div>
                 </div>
+                <p class="text-muted">
+                  <small>&copy; <span id="year"></span> author by <a href="https://github.com/yan043">Mahdian</a></small>
+                </p>
               </div>
             </div>
           </div>
@@ -121,7 +121,6 @@
         </div>
       </div>
     </div>
-    <!-- js -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -142,6 +141,8 @@
     ></script>
     <script>
       $(document).ready(function () {
+        document.getElementById('year').textContent = new Date().getFullYear();
+
         const clientIdCheck = document.getElementById("client-id");
 
         clientIdCheck.addEventListener("input", function (event) {
@@ -175,7 +176,6 @@
 
         socket.on("init", function (data) {
           $(".client-container .client").not(":first").remove();
-          // console.log(data);
           for (var i = 0; i < data.length; i++) {
             var session = data[i];
 
