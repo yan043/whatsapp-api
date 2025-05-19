@@ -2,8 +2,6 @@
 
 **WhatsApp API Gateway** adalah solusi **multi-login** berbasis website yang memungkinkan Anda mengelola sesi WhatsApp dan mengirim pesan melalui REST API. Cocok untuk keperluan notifikasi sistem, chatbot, hingga kebutuhan bisnis lainnya!
 
-![banner](https://user-images.githubusercontent.com/10343216/128694250-498be648-1981-4e0c-a8d2-02281b4f2ff5.png)
-
 ---
 
 ## ✨ Fitur Unggulan
