@@ -102,7 +102,10 @@
                   </div>
                 </div>
                 <p class="text-muted">
-                  <small>&copy; <span id="year"></span> author by <a href="https://github.com/yan043">Mahdian</a></small>
+                  <small>
+                    &copy; <span id="year"></span> author by
+                    <a href="https://github.com/yan043">Mahdian</a>
+                  </small>
                 </p>
               </div>
             </div>
@@ -121,6 +124,7 @@
         </div>
       </div>
     </div>
+
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -140,23 +144,27 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.min.js"
     ></script>
     <script>
-      $(document).ready(function () {
+      $(document).ready(function ()
+      {
         document.getElementById('year').textContent = new Date().getFullYear();
 
         const clientIdCheck = document.getElementById("client-id");
 
-        clientIdCheck.addEventListener("input", function (event) {
+        clientIdCheck.addEventListener("input", function (event)
+        {
           const regex = /^[a-zA-Z0-9_-]+$/;
           const inputValue = event.target.value;
 
-          if (!regex.test(inputValue)) {
+          if (!regex.test(inputValue))
+          {
             event.target.value = inputValue.slice(0, -1);
           }
         });
 
         var socket = io();
 
-        $(".add-client-btn").click(function () {
+        $(".add-client-btn").click(function ()
+        {
           var clientId = $("#client-id").val();
           var clientDescription = $("#client-description").val();
           var template = $(".client")
@@ -164,19 +172,24 @@
             .clone()
             .removeClass("hide")
             .addClass(clientId);
+
           template.find(".title").html(clientId);
           template.find(".description").html(clientDescription);
           $(".client-container").append(template);
 
-          socket.emit("create-session", {
+          socket.emit("create-session",
+          {
             id: clientId,
-            description: clientDescription,
+            description: clientDescription
           });
         });
 
-        socket.on("init", function (data) {
+        socket.on("init", function (data)
+        {
           $(".client-container .client").not(":first").remove();
-          for (var i = 0; i < data.length; i++) {
+
+          for (var i = 0; i < data.length; i++)
+          {
             var session = data[i];
 
             var clientId = session.id;
@@ -186,15 +199,19 @@
               .clone()
               .removeClass("hide")
               .addClass(clientId);
+
             template.find(".title").html(clientId);
             template.find(".description").html(clientDescription);
             $(".client-container").append(template);
 
-            if (session.ready) {
+            if (session.ready)
+            {
               $(`.client.${session.id} .logs`).append(
                 $("<li>").text("Whatsapp is Ready!")
               );
-            } else {
+            }
+            else
+            {
               $(`.client.${session.id} .logs`).append(
                 $("<li>").text("Connecting...")
               );
@@ -202,24 +219,29 @@
           }
         });
 
-        socket.on("remove-session", function (id) {
+        socket.on("remove-session", function (id)
+        {
           $(`.client.${id}`).remove();
         });
 
-        socket.on("message", function (data) {
+        socket.on("message", function (data)
+        {
           $(`.client.${data.id} .logs`).append($("<li>").text(data.text));
         });
 
-        socket.on("qr", function (data) {
+        socket.on("qr", function (data)
+        {
           $(`.client.${data.id} #qrcode`).attr("src", data.src);
           $(`.client.${data.id} #qrcode`).show();
         });
 
-        socket.on("ready", function (data) {
+        socket.on("ready", function (data)
+        {
           $(`.client.${data.id} #qrcode`).hide();
         });
 
-        socket.on("authenticated", function (data) {
+        socket.on("authenticated", function (data)
+        {
           $(`.client.${data.id} #qrcode`).hide();
         });
       });
