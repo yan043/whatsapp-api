@@ -1,29 +1,22 @@
 # 📱 WhatsApp Web API Gateway
 
-**WhatsApp API Gateway** adalah solusi **multi-login** berbasis website yang memungkinkan Anda mengelola sesi WhatsApp dan mengirim pesan melalui REST API. Cocok untuk keperluan notifikasi sistem, chatbot, hingga kebutuhan bisnis lainnya!
+**WhatsApp API Gateway** adalah solusi **multi-login** berbasis website yang memungkinkan Anda mengelola banyak sesi WhatsApp dan mengirim pesan (teks & media) melalui REST API.  
+Cocok untuk notifikasi sistem, chatbot, broadcast, hingga kebutuhan bisnis lainnya!
 
 ---
 
-## ✨ Fitur Unggulan
+## 🚀 Fitur Utama
 
-- ✅ **Multi-Session Support**  
-  Menjalankan lebih dari satu sesi WhatsApp dalam satu aplikasi
-
-- 📱 **QR Code Login**  
-  Login mudah dengan scan QR seperti WhatsApp Web
-
-- 📤 **Kirim Pesan via API**  
-  Kirim pesan teks langsung dari sistem Anda
-
-- 🌐 **Dashboard Web**  
-  Antarmuka visual untuk manajemen sesi
-
-- 🔌 **RESTful API**  
-  Mudah diintegrasikan dengan berbagai platform
+- **Multi-Session**: Kelola banyak akun WhatsApp sekaligus
+- **Login QR Code**: Scan QR seperti WhatsApp Web
+- **Kirim Pesan & Media**: Kirim teks, gambar, dokumen via API
+- **Broadcast Delay**: Atur jeda antar pesan broadcast (custom detik)
+- **Dashboard Web**: Antarmuka visual untuk manajemen sesi
+- **RESTful API**: Mudah diintegrasikan ke sistem Anda
 
 ---
 
-## ⚙️ Instalasi & Menjalankan
+## ⚡️ Instalasi & Menjalankan
 
 ### 1. Clone Repository
 
@@ -44,79 +37,129 @@ npm install
 npm start
 ```
 
-🌐 Buka browser dan akses: [http://localhost:3000](http://localhost:3000)
+Aplikasi akan berjalan di port **6969** secara default.  
+Buka browser dan akses: [http://localhost:6969](http://localhost:6969)
+
+> **Catatan:**  
+> - Untuk port/host custom, gunakan environment variable `PORT` dan `HOST`.
+> - Kompatibel untuk Windows & Linux.
 
 ---
 
-## 🧠 Struktur Proyek
+## 🖥️ Penggunaan
 
-```bash
-whatsapp-api/
-├── app.js                 # Entry point utama aplikasi
-├── helpers/
-│   └── helper.js          # Fungsi-fungsi bantu (random id, filename generator)
-├── assets/
-│   └── style.css          # CSS untuk tampilan halaman web
-├── index.html             # Halaman frontend untuk login & kirim pesan
-├── sessions/              # Folder penyimpanan sesi login WhatsApp
-└── README.md              # Dokumentasi proyek ini
-```
+### 1. **Buka Dashboard**
 
----
+Akses [http://localhost:6969](http://localhost:6969)  
+Buat sesi baru dengan ID unik, lalu scan QR menggunakan WhatsApp Anda.
 
-## 🔌 Endpoint API
+### 2. **Broadcast Pesan (Dengan Delay Custom)**
 
-| Method | Endpoint            | Deskripsi                        |
-|--------|---------------------|----------------------------------|
-| GET    | `/`                 | Halaman utama (login + kirim)    |
-| POST   | `/send-message`     | Kirim pesan ke nomor WhatsApp    |
+Akses menu **Broadcast** di [http://localhost:6969/broadcast](http://localhost:6969/broadcast)
 
-**Contoh request kirim pesan:**
+- Masukkan ID Sender (sesi WhatsApp)
+- Masukkan daftar nomor (pisahkan dengan koma)
+- Isi pesan
+- (Opsional) Upload media
+- **Atur Delay** (jeda antar pesan, misal: 2 detik/pesan)
+- Klik **Kirim Broadcast**
+
+Setiap pesan akan dikirim satu per satu sesuai delay yang Anda tentukan.
+
+### 3. **Kirim Pesan via API**
+
+#### Endpoint Kirim Pesan Teks
 
 ```http
 POST /send-message
 Content-Type: application/json
 
 {
-  "session": "namasession",
+  "sender": "id_session",
   "number": "6281234567890",
   "message": "Halo dari API!"
 }
 ```
 
+#### Endpoint Kirim Media
+
+```http
+POST /send-media
+Content-Type: application/json
+
+{
+  "sender": "id_session",
+  "number": "6281234567890",
+  "caption": "Ini gambar",
+  "file": "http://localhost:6969/assets/uploads/namafile.jpg"
+}
+```
+
+#### Endpoint Broadcast (dengan delay)
+
+```http
+POST /broadcast
+Content-Type: application/json
+
+{
+  "sender": "id_session",
+  "numbers": "6281234567890,6289876543210",
+  "message": "Promo spesial hari ini!",
+  "file": "http://localhost:6969/assets/uploads/namafile.jpg", // opsional
+  "delay": 3 // delay antar pesan dalam detik
+}
+```
+
+#### Upload Media
+
+```http
+POST /upload
+Content-Type: multipart/form-data
+
+file: [pilih file]
+```
+Response:  
+```json
+{ "status": true, "url": "http://localhost:6969/assets/uploads/namafile.jpg" }
+```
+
 ---
 
-## 🧪 Fungsi & Logika Utama
+## 🗂️ Struktur Proyek
 
-- **app.js**
-  - Membuat sesi WhatsApp menggunakan [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
-  - Menangani koneksi QR dan penyimpanan sesi ke file
-  - Menyediakan route REST API untuk mengirim pesan
-
-- **helpers/helper.js**
-  - Fungsi untuk generate nama file secara acak
-  - Fungsi timestamp atau ID generator
-
-- **index.html**
-  - Tampilan login QR per sesi
-  - Formulir untuk kirim pesan ke nomor tujuan
-
----
-
-## 💡 Catatan Tambahan
-
-- Folder `sessions/` digunakan untuk menyimpan sesi agar tidak perlu scan QR ulang saat restart.
-- Format nomor WhatsApp yang valid dimulai dengan kode negara, contoh: `6281234567890` (tanpa `+`).
+```bash
+whatsapp-api/
+├── index.js                 # Entry point utama aplikasi
+├── helpers/
+│   └── formatter.js         # Format nomor WhatsApp
+├── assets/
+│   └── uploads/             # Folder upload media
+├── views/
+│   ├── index.html           # Dashboard multi-session
+│   └── broadcast.html       # Halaman broadcast pesan (dengan delay)
+├── sessions/                # Penyimpanan sesi login WhatsApp
+└── README.md                # Dokumentasi proyek ini
+```
 
 ---
 
-## 🙌 Kontribusi
+## 💡 Tips & Catatan
 
-Kami membuka kontribusi dari siapa pun!
+- **Nomor WhatsApp** harus format internasional, contoh: `6281234567890` (tanpa `+`).
+- Folder `sessions/` menyimpan sesi agar tidak perlu scan QR ulang saat restart.
+- Folder `assets/uploads/` otomatis dibuat untuk upload file.
+- Bisa dijalankan di **Windows** maupun **Linux** tanpa perlu ubah kode.
+- Fitur delay broadcast sangat berguna untuk menghindari spam/blocking dari WhatsApp.
+
+---
+
+## 🤝 Kontribusi
+
+Kontribusi sangat terbuka!
 
 1. Fork repositori ini
-2. Buat branch fitur atau perbaikan
-3. Kirim pull request untuk kami review
+2. Buat branch fitur/perbaikan
+3. Kirim pull request untuk direview
 
 ---
 
@@ -126,6 +169,7 @@ Proyek ini dirilis di bawah [MIT License](LICENSE).
 
 ---
 
-## 🤝 Kredit
+## 🙏 Kredit
 
-Dibuat oleh [yan043](https://github.com/yan043) dengan ❤️ menggunakan Node.js dan whatsapp-web.js
+Dibuat oleh [yan043](https://github.com/yan043)  
+Powered by Node.js & [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
