@@ -8,3 +8,8 @@ whatsapp-sessions.json
 node_modules
 /node_modules
 /node_modules/*
+
+# Dockerfile
+# docker-compose.yml
+# ./docker-compose.yml
+# docker/
