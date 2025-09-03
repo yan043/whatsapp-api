@@ -106,7 +106,7 @@ Content-Type: application/json
   "numbers": "6281234567890,6289876543210",
   "message": "Promo spesial hari ini!",
   "file": "http://localhost:6969/assets/uploads/namafile.jpg", // opsional
-  "delay": 3 // delay antar pesan dalam detik
+  "delay": 30 // delay antar pesan dalam detik
 }
 ```
 
@@ -133,6 +133,9 @@ whatsapp-api/
 ├── helpers/
 │   └── formatter.js         # Format nomor WhatsApp
 ├── assets/
+│   ├── css/                 # File CSS (core, style, icon-font)
+│   ├── icon/                # Favicon dan ikon
+│   ├── images/              # Gambar banner dan lainnya
 │   └── uploads/             # Folder upload media
 ├── views/
 │   ├── index.html           # Dashboard multi-session

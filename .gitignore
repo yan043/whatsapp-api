@@ -9,6 +9,9 @@ node_modules
 /node_modules
 /node_modules/*
 
+assets/uploads
+assets/uploads/*
+
 Dockerfile
 docker-compose.yml
 ./docker-compose.yml

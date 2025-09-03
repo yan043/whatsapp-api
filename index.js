@@ -356,7 +356,7 @@ app.post("/broadcast", async (req, res) =>
     const numbers   = req.body.numbers;
     const message   = req.body.message;
     const fileUrl   = req.body.file;
-    const delay     = Math.max(1, parseInt(req.body.delay) || 2); // delay dalam detik, minimal 1
+    const delay     = Math.max(1, parseInt(req.body.delay) || 30);
 
     const client    = sessions.find((sess) => sess.id == sender)?.client;
 
@@ -432,7 +432,6 @@ app.post("/broadcast", async (req, res) =>
             }
         }
 
-        // Delay antar pesan
         if (i < numbersArr.length - 1) {
             await new Promise(resolve => setTimeout(resolve, delay * 1000));
         }
