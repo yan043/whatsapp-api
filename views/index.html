@@ -1,264 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>WhatsApp API</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <title>Device Sessions - WhatsApp API</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-  <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <style>
-    body {
-      background: #f7f9fa;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-    }
-    .client {
-      border: 0.1px solid #ccc;
-      padding: 18px 16px 12px 16px;
-      box-sizing: border-box;
-      margin: 10px 0;
-      min-width: 250px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .hide {
-      display: none;
-    }
-    .client-description {
-      border-color: #d4d4d4;
-    }
-    .support-banner {
-      width: 100%;
-      background: #eaf6fb;
-      color: #3498db;
-      padding: 10px 0;
-      text-align: center;
-      font-weight: 500;
-      overflow: hidden;
-      position: relative;
-    }
-    .support-banner span {
-      display: inline-block;
-      animation: marquee 12s linear infinite;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(100%);}
-      100% { transform: translateX(-100%);}
-    }
-    .client ul {
-      padding-left: 18px;
-      margin: 0;
-      width: 100%;
-    }
-    .client img#qrcode {
-      max-width: 150px;
-      margin: 10px 0;
-      display: none;
-    }
-    .login-box {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-      padding: 32px 28px 24px 28px;
-      margin: 40px 0;
-    }
-    .login-title h2 {
-      color: #3498db;
-      font-weight: 700;
-      margin-bottom: 18px;
-      letter-spacing: 1px;
-    }
-    .btn-info {
-      background: #3498db;
-      border: none;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-    .btn-info:hover {
-      background: #217dbb;
-    }
-    @media (max-width: 991px) {
-      .login-box {
-        margin: 20px 0;
-        padding: 18px 8px 14px 8px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="support-banner">
-      <span>
-        You can support the maintainer of this project through
-        <b>DANA +6285248804480</b> — Thanks Before :)
-      </span>
-    </div>
-  </header>
+        <style>
+            body {
+                background: #f7f9fa;
+                font-family: "Inter", sans-serif;
+                min-height: 100vh;
+            }
 
-  <main>
-    <div class="container h-100">
-      <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
-        <div class="col-lg-6 d-flex align-items-center">
-          <div class="login-box w-100">
-            <div class="login-title">
-              <h2 class="text-center text-info">Device Session</h2>
+            .client-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                justify-content: center;
+                max-height: 80vh;
+                overflow-y: auto;
+                padding-right: 6px;
+            }
+
+            .client {
+                border: 0.1px solid #ccc;
+                padding: 10px 8px;
+                box-sizing: border-box;
+                margin: 0;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 1px 10px rgba(52, 152, 219, 0.06);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+
+                flex: 1 1 calc(50% - 20px);
+                max-width: 220px;
+                text-align: center;
+            }
+
+            .client .timestamp {
+                position: absolute;
+                top: 8px;
+                right: 12px;
+                font-size: 10px;
+                color: #666;
+                font-weight: 500;
+            }
+
+            .hide {
+                display: none;
+            }
+
+            .client-description {
+                border-color: #d4d4d4;
+                font-size: 13px;
+            }
+
+            .support-banner {
+                width: 100%;
+                background: #eaf6fb;
+                color: #3498db;
+                padding: 10px 0;
+                text-align: center;
+                font-weight: 500;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .support-banner span {
+                display: inline-block;
+                animation: marquee 12s linear infinite;
+            }
+
+            @keyframes marquee {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+
+            .client ul {
+                padding-left: 12px;
+                margin: 0;
+                width: 100%;
+                font-size: 13px;
+            }
+
+            .client img#qrcode {
+                max-width: 120px;
+                margin: 10px 0;
+                display: none;
+            }
+
+            .login-box {
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
+                padding: 20px 16px 16px 16px;
+                margin: 20px 0;
+            }
+
+            .login-title h2 {
+                color: #3498db;
+                font-weight: 700;
+                margin-bottom: 18px;
+                letter-spacing: 1px;
+            }
+
+            .btn-info {
+                background: #3498db;
+                border: none;
+                font-weight: 600;
+                letter-spacing: 1px;
+            }
+
+            .btn-info:hover {
+                background: #217dbb;
+            }
+
+            @media (max-width: 991px) {
+                .login-box {
+                    margin: 20px 0;
+                    padding: 18px 8px 14px 8px;
+                }
+
+                .client {
+                    flex: 1 1 100%;
+                    max-width: 100%;
+                }
+            }
+        </style>
+
+    </head>
+    <body>
+        <header>
+            <div class="support-banner">
+                <span>
+                    You can support the maintainer of this project through
+                    <b>DANA +6285248804480</b> — Thanks Before :)
+                </span>
             </div>
-            <form class="form-container" onsubmit="return false;">
-              <div class="input-group custom mb-3">
-                <input
-                  type="text"
-                  class="form-control form-control-lg"
-                  placeholder="ID Sender"
-                  id="client-id"
-                  required
-                />
-              </div>
-              <div class="input-group custom mb-3">
-                <textarea
-                  rows="4"
-                  class="form-control client-description"
-                  id="client-description"
-                  placeholder="Enter a Description"
-                  required
-                ></textarea>
-              </div>
-              <div class="input-group mb-0">
-                <button
-                  type="submit"
-                  class="btn btn-info btn-lg btn-block add-client-btn"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-            <footer>
-              <p class="text-muted mt-4 mb-0 text-center">
-                <small>
-                  &copy; <span id="year"></span> author by
-                  <a href="https://github.com/yan043">Mahdian</a>
-                </small>
-              </p>
-            </footer>
-          </div>
-        </div>
-        <div class="col-lg-6 d-flex flex-column align-items-center">
-          <div class="w-100">
-            <div class="row justify-content-center client-container">
-              <div class="client hide col-12">
-                <h3 class="title text-info"></h3>
-                <p class="text-muted description"></p>
-                <img src="" id="qrcode" alt="QR Code" />
-                <ul class="logs"></ul>
-              </div>
+        </header>
+
+        <main>
+            <div class="container h-100">
+                <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+                    <div class="col-lg-6 d-flex align-items-center">
+                        <div class="login-box w-100">
+                            <div class="login-title">
+                                <h2 class="text-center text-info">Device Sessions</h2>
+                            </div>
+                            <form class="form-container" onsubmit="return false;">
+                                <div class="input-group custom mb-3">
+                                <input type="text" class="form-control" placeholder="Sender ID" id="client-id" required />
+                                </div>
+                                <div class="input-group custom mb-3">
+                                    <textarea rows="4" class="form-control client-description" id="client-description" placeholder="Enter a Description" required></textarea>
+                                </div>
+                                <div class="input-group mb-0">
+                                    <button type="submit" class="btn btn-info btn-lg btn-block add-client-btn">
+                                        Create
+                                    </button>
+                                </div>
+                            </form>
+                            <footer>
+                                <p class="text-muted mt-4 mb-0 text-center">
+                                    <small>
+                                        &copy; <span id="year"></span> author by
+                                        <a href="https://github.com/yan043" style="color: #6c757d !important;">Mahdian</a>
+                                    </small>
+                                </p>
+                            </footer>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-flex flex-column align-items-center">
+                        <div class="w-100">
+                            <div class="row justify-content-center client-container">
+                                <div class="client hide col-12">
+                                    <div class="timestamp"></div>
+                                    <h3 class="title text-info"></h3>
+                                    <p class="text-muted description"></p>
+                                    <img src="" id="qrcode" alt="QR Code" />
+                                    <ul class="logs"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+        </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      document.getElementById('year').textContent = new Date().getFullYear();
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                document.getElementById("year").textContent = new Date().getFullYear();
 
-      const clientIdCheck = document.getElementById("client-id");
-      clientIdCheck.addEventListener("input", function (event) {
-        const regex = /^[a-zA-Z0-9_-]+$/;
-        const inputValue = event.target.value;
-        if (!regex.test(inputValue)) {
-          event.target.value = inputValue.slice(0, -1);
-        }
-      });
+                const clientIdCheck = document.getElementById("client-id");
+                clientIdCheck.addEventListener("input", function (event) {
+                    const regex = /^[a-zA-Z0-9_-]+$/;
+                    const inputValue = event.target.value;
+                    if (!regex.test(inputValue)) {
+                        event.target.value = inputValue.slice(0, -1);
+                    }
+                });
 
-      var socket = io();
+                var socket = io();
 
-      $(".add-client-btn").click(function () {
-        var clientId = $("#client-id").val();
-        var clientDescription = $("#client-description").val();
-        if (!clientId || !clientDescription) return;
+                $(".add-client-btn").click(function () {
+                    var clientId = $("#client-id").val();
+                    var clientDescription = $("#client-description").val();
+                    if (!clientId || !clientDescription) return;
 
-        var template = $(".client")
-          .first()
-          .clone()
-          .removeClass("hide")
-          .addClass(clientId);
+                    var template = $(".client").first().clone().removeClass("hide").addClass(clientId);
 
-        template.find(".title").html(clientId);
-        template.find(".description").html(clientDescription);
-        template.find(".logs").empty();
-        template.find("#qrcode").hide();
-        $(".client-container").append(template);
+                    var now = new Date();
+                    var timestamp = now.getFullYear() + '-' +
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(now.getDate()).padStart(2, '0') + ' ' +
+                        String(now.getHours()).padStart(2, '0') + ':' +
+                        String(now.getMinutes()).padStart(2, '0') + ':' +
+                        String(now.getSeconds()).padStart(2, '0');
 
-        socket.emit("create-session", {
-          id: clientId,
-          description: clientDescription
-        });
-      });
+                    template.find(".title").html(clientId);
+                    template.find(".description").html(clientDescription);
+                    template.find(".timestamp").html(timestamp);
+                    template.find(".logs").empty();
+                    template.find("#qrcode").hide();
+                    $(".client-container").append(template);
 
-      socket.on("init", function (data) {
-        $(".client-container .client").not(":first").remove();
+                    socket.emit("create-session", {
+                        id: clientId,
+                        description: clientDescription,
+                    });
+                });
 
-        for (var i = 0; i < data.length; i++) {
-          var session = data[i];
-          var clientId = session.id;
-          var clientDescription = session.description;
-          var template = $(".client")
-            .first()
-            .clone()
-            .removeClass("hide")
-            .addClass(clientId);
+                socket.on("init", function (data) {
+                    $(".client-container .client").not(":first").remove();
 
-          template.find(".title").html(clientId);
-          template.find(".description").html(clientDescription);
-          template.find(".logs").empty();
-          template.find("#qrcode").hide();
-          $(".client-container").append(template);
+                    for (var i = 0; i < data.length; i++) {
+                        var session = data[i];
+                        var clientId = session.id;
+                        var clientDescription = session.description;
+                        var template = $(".client").first().clone().removeClass("hide").addClass(clientId);
 
-          if (session.ready) {
-            $(`.client.${session.id} .logs`).append(
-              $("<li>").text("Whatsapp is Ready!")
-            );
-          } else {
-            $(`.client.${session.id} .logs`).append(
-              $("<li>").text("Connecting...")
-            );
-          }
-        }
-      });
+                        template.find(".title").html(clientId);
+                        template.find(".description").html(clientDescription);
+                        template.find(".logs").empty();
+                        template.find("#qrcode").hide();
+                        $(".client-container").append(template);
 
-      socket.on("remove-session", function (id) {
-        $(`.client.${id}`).remove();
-      });
+                        if (session.ready) {
+                            $(`.client.${session.id} .logs`).append($("<li>").text("Whatsapp is Ready!"));
+                        } else {
+                            $(`.client.${session.id} .logs`).append($("<li>").text("Connecting..."));
+                        }
+                    }
+                });
 
-      socket.on("message", function (data) {
-        $(`.client.${data.id} .logs`).append($("<li>").text(data.text));
-      });
+                socket.on("remove-session", function (id) {
+                    $(`.client.${id}`).remove();
+                });
 
-      socket.on("qr", function (data) {
-        $(`.client.${data.id} #qrcode`).attr("src", data.src).show();
-      });
+                socket.on("message", function (data) {
+                    $(`.client.${data.id} .logs`).append($("<li>").text(data.text));
+                });
 
-      socket.on("ready", function (data) {
-        $(`.client.${data.id} #qrcode`).hide();
-      });
+                socket.on("qr", function (data) {
+                    $(`.client.${data.id} #qrcode`).attr("src", data.src).show();
+                });
 
-      socket.on("authenticated", function (data) {
-        $(`.client.${data.id} #qrcode`).hide();
-      });
-    });
-  </script>
-</body>
+                socket.on("ready", function (data) {
+                    $(`.client.${data.id} #qrcode`).hide();
+                });
+
+                socket.on("authenticated", function (data) {
+                    $(`.client.${data.id} #qrcode`).hide();
+                });
+            });
+        </script>
+    </body>
 </html>

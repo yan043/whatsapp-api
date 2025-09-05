@@ -28,7 +28,7 @@
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.7.5",
-    "update": "^0.7.4",
+    "update": "^0.4.2",
     "whatsapp-web.js": "^1.23.0"
   },
   "devDependencies": {

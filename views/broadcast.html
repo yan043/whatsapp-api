@@ -1,314 +1,348 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Broadcast WhatsApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <title>Broadcast - WhatsApp API</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-  <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
-  <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+        <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f7f9fa;
-      min-height: 100vh;
-    }
-    .broadcast-box {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-      padding: 32px 28px 24px 28px;
-      margin: 40px 0;
-    }
-    .broadcast-title {
-      color: #3498db;
-      font-weight: 700;
-      margin-bottom: 18px;
-      letter-spacing: 1px;
-    }
-    .icon-broadcast {
-      font-size: 48px;
-      color: #3498db;
-      margin-bottom: 10px;
-    }
-    .input-group.custom {
-      margin-bottom: 18px;
-    }
-    #result {
-      margin-top: 18px;
-      white-space: pre-wrap;
-      font-size: 14px;
-      color: #2d3436;
-      background: #f1f2f6;
-      border-radius: 6px;
-      padding: 10px;
-    }
-    .btn-info {
-      background: #3498db;
-      border: none;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-    .btn-info:hover {
-      background: #217dbb;
-    }
-    /* WhatsApp Chat Preview Styles */
-    .wa-preview-container {
-      background: #ece5dd;
-      border-radius: 10px;
-      padding: 24px 12px;
-      min-height: 420px;
-      box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      position: relative;
-      height: 100%;
-      justify-content: center;
-    }
-    .wa-chat-header {
-      width: 100%;
-      background: #075e54;
-      color: #fff;
-      border-radius: 8px 8px 0 0;
-      padding: 10px 14px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-    }
-    .wa-chat-header .icon {
-      font-size: 22px;
-      margin-right: 10px;
-    }
-    .wa-chat-header .wa-title {
-      font-weight: 600;
-      font-size: 16px;
-      letter-spacing: 1px;
-    }
-    .wa-bubble {
-      background: #dcf8c6;
-      border-radius: 8px 8px 0 8px;
-      padding: 10px 14px 22px 14px;
-      margin-bottom: 8px;
-      max-width: 80%;
-      word-break: break-word;
-      box-shadow: 0 1px 2px rgba(7,94,84,0.08);
-      position: relative;
-      font-size: 15px;
-      color: #222;
-      text-align: left;
-      min-width: 120px;
-      min-height: 44px;
-    }
-    .wa-bubble img {
-      max-width: 180px;
-      border-radius: 6px;
-      display: block;
-      margin-bottom: 8px;
-      background: #fff;
-      border: 1px solid #eee;
-    }
-    .wa-bubble .wa-time {
-      font-size: 11px;
-      color: #888;
-      position: absolute;
-      right: 12px;
-      bottom: 6px;
-      background: transparent;
-      z-index: 2;
-      padding-left: 8px;
-    }
-    @media (max-width: 991px) {
-      .broadcast-box, .wa-preview-container {
-        margin: 20px 0;
-      }
-      .wa-preview-container {
-        min-height: 320px;
-      }
-    }
-    @media (max-width: 767px) {
-      .wa-preview-container {
-        min-height: 220px;
-        padding: 12px 4px;
-      }
-      .broadcast-box {
-        padding: 18px 8px 14px 8px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container h-100">
-    <div class="row justify-content-center align-items-center h-100" style="min-height: 100vh;">
-      <div class="col-lg-6 d-flex align-items-center">
-        <div class="broadcast-box w-100">
-          <div class="text-center">
-            <div class="icon-broadcast">
-              <span class="icon-copy"></span>
+        <style>
+            body {
+                font-family: "Inter", sans-serif;
+                background: #f7f9fa;
+                min-height: 100vh;
+            }
+            .support-banner {
+                width: 100%;
+                background: #eaf6fb;
+                color: #3498db;
+                padding: 10px 0;
+                text-align: center;
+                font-weight: 500;
+                overflow: hidden;
+                position: relative;
+            }
+            .support-banner span {
+                display: inline-block;
+                animation: marquee 12s linear infinite;
+            }
+            @keyframes marquee {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+            .broadcast-box {
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
+                padding: 20px 16px 16px 16px;
+                margin: 20px 0;
+            }
+            .broadcast-title {
+                color: #3498db;
+                font-weight: 700;
+                margin-bottom: 18px;
+                letter-spacing: 1px;
+            }
+            .icon-broadcast {
+                font-size: 48px;
+                color: #3498db;
+                margin-bottom: 10px;
+            }
+            .input-group.custom {
+                margin-bottom: 18px;
+            }
+            .btn-info {
+                background: #3498db;
+                border: none;
+                font-weight: 600;
+                letter-spacing: 1px;
+            }
+            .btn-info:hover {
+                background: #217dbb;
+            }
+            .wa-preview-container {
+                background: #ece5dd;
+                border-radius: 10px;
+                padding: 24px 12px;
+                min-height: 420px;
+                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                position: relative;
+                height: 100%;
+                justify-content: center;
+            }
+            .wa-chat-header {
+                width: 100%;
+                background: #075e54;
+                color: #fff;
+                border-radius: 8px 8px 0 0;
+                padding: 10px 14px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+            }
+            .wa-chat-header .icon {
+                font-size: 22px;
+                margin-right: 10px;
+            }
+            .wa-chat-header .wa-title {
+                font-weight: 600;
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+            .wa-bubble {
+                background: #dcf8c6;
+                border-radius: 8px 8px 0 8px;
+                padding: 10px 14px 22px 14px;
+                margin-bottom: 8px;
+                max-width: 80%;
+                word-break: break-word;
+                box-shadow: 0 1px 2px rgba(7, 94, 84, 0.08);
+                position: relative;
+                font-size: 15px;
+                color: #222;
+                text-align: left;
+                min-width: 120px;
+                min-height: 44px;
+            }
+            .wa-bubble img {
+                max-width: 180px;
+                border-radius: 6px;
+                display: block;
+                margin-bottom: 8px;
+                background: #fff;
+                border: 1px solid #eee;
+            }
+            .wa-bubble .wa-time {
+                font-size: 11px;
+                color: #888;
+                position: absolute;
+                right: 12px;
+                bottom: 6px;
+                background: transparent;
+                z-index: 2;
+                padding-left: 8px;
+            }
+            @media (max-width: 991px) {
+                .broadcast-box,
+                .wa-preview-container {
+                    margin: 20px 0;
+                }
+                .wa-preview-container {
+                    min-height: 320px;
+                }
+            }
+            @media (max-width: 767px) {
+                .wa-preview-container {
+                    min-height: 220px;
+                    padding: 12px 4px;
+                }
+                .broadcast-box {
+                    padding: 18px 8px 14px 8px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="support-banner">
+                <span>
+                    You can support the maintainer of this project through
+                    <b>DANA +6285248804480</b> — Thanks Before :)
+                </span>
             </div>
-            <h2 class="broadcast-title">Broadcast WhatsApp</h2>
-          </div>
-          <form id="broadcast-form" enctype="multipart/form-data" class="mt-3">
-            <div class="input-group custom">
-              <input type="text" class="form-control form-control-lg" name="sender" placeholder="ID Sender" required />
-            </div>
-            <div class="input-group custom">
-              <textarea class="form-control client-description" name="numbers" rows="3" placeholder="Daftar nomor, pisahkan dengan koma" required></textarea>
-            </div>
-            <div class="input-group custom">
-              <textarea class="form-control client-description" name="message" id="wa-message" rows="3" placeholder="Isi pesan" required></textarea>
-            </div>
-            <div class="input-group custom">
-              <input type="file" name="media" id="wa-media" accept="image/*" class="form-control-file" />
-            </div>
-            <div class="form-group">
-              <label for="wa-delay" class="font-weight-bold text-dark">Delay Antar Pesan <small class="text-muted">(detik/pesan)</small></label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text text-white font-weight-bold" style="background-color: #3498db;">Delay</span>
+        </header>
+
+        <div class="container h-100">
+            <div class="row justify-content-center align-items-center h-100" style="min-height: 100vh;">
+                <div class="col-lg-6 d-flex align-items-center">
+                    <div class="broadcast-box w-100">
+                        <div class="text-center">
+                            <div class="icon-broadcast">
+                                <span class="icon-copy"></span>
+                            </div>
+                            <h2 class="broadcast-title">WhatsApp Broadcast</h2>
+                        </div>
+                        <form id="broadcast-form" enctype="multipart/form-data" class="mt-3">
+                            <div class="input-group custom">
+                                <input type="text" class="form-control" name="sender" placeholder="Sender ID" required />
+                            </div>
+                            <div class="input-group custom">
+                                <textarea class="form-control client-description" name="numbers" rows="3" placeholder="List numbers, separated by commas" required></textarea>
+                            </div>
+                            <div class="input-group custom">
+                                <textarea class="form-control client-description" name="message" id="wa-message" rows="3" placeholder="Message Content" required></textarea>
+                            </div>
+                            <div class="input-group custom">
+                                <input type="file" name="media" id="wa-media" accept="image/*" class="form-control-file" />
+                            </div>
+                            <div class="form-group">
+                                <label for="wa-delay" class="font-weight-bold text-dark">Delay Between Messages <small class="text-muted">(seconds/message)</small></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-white font-weight-bold" style="background-color: #3498db;">Delay</span>
+                                    </div>
+                                    <input type="number" min="1" max="60" class="form-control" name="delay" id="wa-delay" value="30" required />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">seconds</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Set the delay between broadcast messages to avoid being flagged as spam.</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-info btn-lg btn-block mt-2"><span class="icon-paper-plane"></span> Send Broadcast</button>
+                        </form>
+                        <footer>
+                            <p class="text-muted mt-4 mb-0 text-center">
+                                <small>
+                                    &copy; <span id="year"></span> author by
+                                    <a href="https://github.com/yan043" style="color: #6c757d !important;">Mahdian</a>
+                                </small>
+                            </p>
+                        </footer>
+                    </div>
                 </div>
-                <input type="number" min="1" max="60" class="form-control" name="delay" id="wa-delay" value="30" required>
-                <div class="input-group-append">
-                  <span class="input-group-text">detik</span>
+                <div class="col-lg-6 d-flex align-items-center h-100" style="height: 84% !important;">
+                    <div class="wa-preview-container w-100">
+                        <div class="wa-chat-header">
+                            <span class="icon icon-whatsapp"></span>
+                            <span class="wa-title">WhatsApp Broadcast</span>
+                        </div>
+                        <div class="wa-bubble" id="wa-preview-bubble">
+                            <img src="" id="wa-preview-img" style="display: none;" alt="Preview Media" />
+                            <span id="wa-preview-text">Your message will appear here...</span>
+                            <span class="wa-time" id="wa-preview-time"></span>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <small class="form-text text-muted">Atur jeda antar pengiriman pesan broadcast agar tidak dianggap spam.</small>
             </div>
-
-            <button type="submit" class="btn btn-info btn-lg btn-block mt-2">
-              <span class="icon-paper-plane"></span> Kirim Broadcast
-            </button>
-          </form>
-          <div id="result"></div>
-          <p class="text-muted mt-4 mb-0 text-center">
-            <small>
-              &copy; <span id="year"></span> author by
-              <a href="https://github.com/yan043">Mahdian</a>
-            </small>
-          </p>
         </div>
-      </div>
-      <div class="col-lg-6 d-flex align-items-center h-100" style="height: 84% !important;">
-        <div class="wa-preview-container w-100">
-          <div class="wa-chat-header">
-            <span class="icon icon-whatsapp"></span>
-            <span class="wa-title">WhatsApp Broadcast</span>
-          </div>
-          <div class="wa-bubble" id="wa-preview-bubble">
-            <img src="" id="wa-preview-img" style="display:none;" alt="Preview Media" />
-            <span id="wa-preview-text">Pesan Anda akan tampil di sini...</span>
-            <span class="wa-time" id="wa-preview-time"></span>
-          </div>
+
+        <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resultModalLabel">Broadcast Results</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modal-result"></div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+        <script>
+            document.getElementById("year").textContent = new Date().getFullYear();
 
-    function formatWhatsapp(text) {
-      text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      text = text.replace(/\*([^\*]+)\*/g, '<b>$1</b>');
-      text = text.replace(/_([^_]+)_/g, '<i>$1</i>');
-      text = text.replace(/\n/g, '<br>');
-      return text;
-    }
+            function formatWhatsapp(text) {
+                text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                text = text.replace(/\*([^\*]+)\*/g, "<b>$1</b>");
+                text = text.replace(/_([^_]+)_/g, "<i>$1</i>");
+                text = text.replace(/\n/g, "<br>");
+                return text;
+            }
 
-    const msgInput = document.getElementById('wa-message');
-    const imgInput = document.getElementById('wa-media');
-    const previewText = document.getElementById('wa-preview-text');
-    const previewImg = document.getElementById('wa-preview-img');
-    const previewTime = document.getElementById('wa-preview-time');
+            const msgInput = document.getElementById("wa-message");
+            const imgInput = document.getElementById("wa-media");
+            const previewText = document.getElementById("wa-preview-text");
+            const previewImg = document.getElementById("wa-preview-img");
+            const previewTime = document.getElementById("wa-preview-time");
 
-    function updatePreview() {
-      let val = msgInput.value.trim();
-      if (!val) {
-        previewText.innerHTML = 'Pesan Anda akan tampil di sini...';
-      } else {
-        previewText.innerHTML = formatWhatsapp(val);
-      }
-      const now = new Date();
-      const jam = now.getHours().toString().padStart(2, '0');
-      const menit = now.getMinutes().toString().padStart(2, '0');
-      previewTime.textContent = jam + ':' + menit;
-    }
+            function updatePreview() {
+                let val = msgInput.value.trim();
+                if (!val) {
+                    previewText.innerHTML = "Your message will appear here...";
+                } else {
+                    previewText.innerHTML = formatWhatsapp(val);
+                }
+                const now = new Date();
+                const jam = now.getHours().toString().padStart(2, "0");
+                const menit = now.getMinutes().toString().padStart(2, "0");
+                previewTime.textContent = jam + ":" + menit;
+            }
 
-    msgInput.addEventListener('input', updatePreview);
+            msgInput.addEventListener("input", updatePreview);
 
-    imgInput.addEventListener('change', function() {
-      if (imgInput.files && imgInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImg.src = e.target.result;
-          previewImg.style.display = 'block';
-        };
-        reader.readAsDataURL(imgInput.files[0]);
-      } else {
-        previewImg.src = '';
-        previewImg.style.display = 'none';
-      }
-    });
+            imgInput.addEventListener("change", function () {
+                if (imgInput.files && imgInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = "block";
+                    };
+                    reader.readAsDataURL(imgInput.files[0]);
+                } else {
+                    previewImg.src = "";
+                    previewImg.style.display = "none";
+                }
+            });
 
-    updatePreview();
+            updatePreview();
 
-    document.getElementById('broadcast-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
+            document.getElementById("broadcast-form").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
 
-      let fileUrl = '';
-      if (form.media.files.length > 0) {
-        const uploadData = new FormData();
-        uploadData.append('file', form.media.files[0]);
-        const uploadRes = await fetch('/upload', { method: 'POST', body: uploadData });
-        const uploadJson = await uploadRes.json();
-        fileUrl = uploadJson.url;
-      }
+                let fileUrl = "";
+                if (form.media.files.length > 0) {
+                    const uploadData = new FormData();
+                    uploadData.append("file", form.media.files[0]);
+                    const uploadRes = await fetch("/upload", { method: "POST", body: uploadData });
+                    const uploadJson = await uploadRes.json();
+                    fileUrl = uploadJson.url;
+                }
 
-      const payload = {
-        sender: form.sender.value,
-        numbers: form.numbers.value,
-        message: form.message.value,
-        file: fileUrl,
-        delay: parseInt(form.delay.value) || 2
-      };
+                const payload = {
+                    sender: form.sender.value,
+                    numbers: form.numbers.value,
+                    message: form.message.value,
+                    file: fileUrl,
+                    delay: parseInt(form.delay.value) || 2,
+                };
 
-      document.getElementById('result').innerHTML = '<div class="alert alert-info">Broadcast sedang dikirim, mohon tunggu...</div>';
+                const res = await fetch("/broadcast", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+                const json = await res.json();
 
-      const res = await fetch('/broadcast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const json = await res.json();
-
-      let html = '';
-      if (json.status) {
-        html += `<div class="alert alert-success mb-2">Broadcast selesai! Hasil:</div>`;
-        html += `<ul class="list-group">`;
-        json.results.forEach(r => {
-          html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-            <span><b>${r.number}</b> <small class="text-muted">${r.status ? '✅' : '❌'}</small></span>
-            <span class="badge badge-${r.status ? 'success' : 'danger'} badge-pill">${r.message}</span>
+                let html = "";
+                if (json.status) {
+                    html += `<div class="alert alert-success mb-2">Broadcast completed! Results:</div>`;
+                    html += `<ul class="list-group">`;
+                    json.results.forEach((r) => {
+                        html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+            <span><b>${r.number}</b> <small class="text-muted">${r.status ? "✅" : "❌"}</small></span>
+            <span class="badge badge-${r.status ? "success" : "danger"} badge-pill">${r.message}</span>
           </li>`;
-        });
-        html += `</ul>`;
-      } else {
-        html += `<div class="alert alert-danger">${json.message || 'Terjadi kesalahan.'}</div>`;
-      }
-      document.getElementById('result').innerHTML = html;
-    });
+                    });
+                    html += `</ul>`;
+                } else {
+                    html += `<div class="alert alert-danger">${json.message || "An error occurred."}</div>`;
+                }
+                document.getElementById("modal-result").innerHTML = html;
+                $("#resultModal").modal("show");
+            });
 
-    setInterval(updatePreview, 10000);
-  </script>
-</body>
+            setInterval(updatePreview, 10000);
+        </script>
+    </body>
 </html>
