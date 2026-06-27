@@ -1,5 +1,8 @@
+.claude/
+.github/
 .vscode/sftp.json
 .wwebjs_*
+.env
 
 npm-debug.log
 package-lock.json

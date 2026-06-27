@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Templat · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
+        <style>
+            .dropzone
+            {
+                border: 2px dashed var(--border, #2a2f3a);
+                border-radius: 12px;
+                padding: 22px;
+                text-align: center;
+                color: var(--text-muted, #8b93a3);
+                cursor: pointer;
+                transition: border-color 0.2s, background 0.2s;
+            }
+            .dropzone.dragover
+            {
+                border-color: var(--accent, #22c55e);
+                background: rgba(34, 197, 94, 0.08);
+            }
+            .dropzone .dz-thumb
+            {
+                max-width: 120px;
+                max-height: 120px;
+                border-radius: 8px;
+                margin-top: 10px;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-logo">💬</div>
+                    <div class="brand-text">
+                        <h1>WA Gateway</h1>
+                        <span data-i18n="brand.subtitle">Multi-Session API</span>
+                    </div>
+                </div>
+                <a href="/" class="nav-link"><span class="nav-icon">🔗</span> <span data-i18n="nav.connection">Koneksi</span></a>
+                <a href="/crm" class="nav-link"><span class="nav-icon">💼</span> <span data-i18n="nav.crm">CRM</span></a>
+                <a href="/broadcast" class="nav-link"><span class="nav-icon">📢</span> <span data-i18n="nav.broadcast">Siaran</span></a>
+                <a href="/templates-page" class="nav-link active"><span class="nav-icon">📝</span> <span data-i18n="nav.templates">Templat</span></a>
+                <a href="/bot-page" class="nav-link"><span class="nav-icon">🤖</span> <span data-i18n="nav.bot">Bot</span></a>
+                <div class="sidebar-footer">
+                    &copy; <span id="year"></span> <a href="https://github.com/yan043" target="_blank" rel="noopener noreferrer">yan043</a>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div class="topbar">
+                    <div class="topbar-user" id="sidebar-user"></div>
+                    <div class="topbar-right">
+                        <div class="lang-options">
+                            <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+                        </div>
+                        <div class="page-clock">
+                            <div class="clock-date" id="clock-date"></div>
+                            <div class="clock-time" id="clock-time"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-head">
+                    <div>
+                        <h2 data-i18n="page.templates.title">Templat Pesan</h2>
+                        <p data-i18n="page.templates.subtitle">Buat pesan yang dapat dipakai ulang dan dipilih saat menyusun siaran.</p>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div>
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.newTemplate">➕ Templat Baru</h3>
+                        <form id="template-form">
+                            <div class="field">
+                                <label data-i18n="label.title">Judul</label>
+                                <input class="input" id="template-title" maxlength="255" data-i18n-placeholder="placeholder.templateTitle" placeholder="mis. Sapaan Promo" required />
+                            </div>
+                            <div class="field">
+                                <label data-i18n="label.messageBody">Isi Pesan</label>
+                                <textarea class="textarea" id="template-body" maxlength="5000" data-i18n-placeholder="placeholder.templateBody" placeholder="Tulis isi templat... *tebal* _miring_" required></textarea>
+                            </div>
+                            <div class="field">
+                                <label data-i18n="label.imageOptional">Gambar (opsional)</label>
+                                <div class="dropzone" id="dropzone">
+                                    <div id="dz-text" data-i18n="dropzone.text">Seret &amp; lepas gambar di sini, atau klik untuk memilih</div>
+                                    <img class="dz-thumb" id="dz-thumb" alt="thumbnail" />
+                                </div>
+                                <button type="button" class="btn btn-danger btn-block" id="clear-image" style="display:none;margin-top:10px" data-i18n="btn.removeImage">🗑️ Hapus Gambar</button>
+                                <input type="file" id="template-image" accept="image/*" hidden />
+                            </div>
+                            <div class="field">
+                                <label data-i18n="label.buttons">Tombol (menu angka)</label>
+                                <div class="hint" data-i18n="buttons.hint">Penerima membalas dengan angka untuk memilih. Maksimal 5 tombol.</div>
+                                <div id="button-list"></div>
+                                <button type="button" class="btn btn-ghost btn-block" id="add-button" data-i18n="btn.addButton">➕ Tambah Tombol</button>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" data-i18n="btn.saveTemplate">💾 Simpan Templat</button>
+                        </form>
+                    </div>
+
+                    <div class="card" style="margin-top:22px">
+                        <h3 class="card-title" data-i18n="card.savedTemplates">📋 Templat Tersimpan</h3>
+                        <div id="template-list"></div>
+                    </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.livePreview">👁️ Pratinjau Langsung</h3>
+                        <div class="wa-preview">
+                            <div class="wa-header">
+                                <div class="wa-avatar">W</div>
+                                <div>
+                                    <div class="wa-name" data-i18n="wa.templateName">Templat WhatsApp</div>
+                                    <div class="wa-sub" data-i18n="wa.online">daring</div>
+                                </div>
+                            </div>
+                            <div class="wa-bubble">
+                                <img id="wa-preview-img" alt="Preview" />
+                                <span id="wa-preview-text" data-i18n="wa.previewPlaceholder">Pesan Anda akan tampil di sini...</span>
+                                <span class="wa-time" id="wa-preview-time"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="toast-wrap" id="toast-wrap"></div>
+
+        <script src="/assets/js/i18n.js"></script>
+        <script>
+            document.getElementById("year").textContent = new Date().getFullYear();
+
+            function startClock()
+            {
+                const dateEl = document.getElementById("clock-date");
+                const timeEl = document.getElementById("clock-time");
+                if (!dateEl || !timeEl)
+                {
+                    return;
+                }
+
+                const dateFmt = new Intl.DateTimeFormat("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+
+                const tick = function ()
+                {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, "0");
+                    const mm = String(now.getMinutes()).padStart(2, "0");
+                    const ss = String(now.getSeconds()).padStart(2, "0");
+                    dateEl.textContent = dateFmt.format(now);
+                    timeEl.textContent = hh + ":" + mm + ":" + ss;
+                };
+
+                tick();
+                setInterval(tick, 1000);
+            }
+
+            startClock();
+
+            function toast(message, isError)
+            {
+                const el = document.createElement("div");
+                el.className = "toast" + (isError ? " error" : "");
+                el.textContent = message;
+                document.getElementById("toast-wrap").appendChild(el);
+                setTimeout(() => el.remove(), 3500);
+            }
+
+            function parseButtons(raw)
+            {
+                if (!raw)
+                {
+                    return [];
+                }
+
+                try
+                {
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                }
+                catch (err)
+                {
+                    return [];
+                }
+            }
+
+            const templateList = document.getElementById("template-list");
+            const imgInput = document.getElementById("template-image");
+            const dropzone = document.getElementById("dropzone");
+            const dzText = document.getElementById("dz-text");
+            const dzThumb = document.getElementById("dz-thumb");
+            const clearBtn = document.getElementById("clear-image");
+            const bodyInput = document.getElementById("template-body");
+            const previewText = document.getElementById("wa-preview-text");
+            const previewImg = document.getElementById("wa-preview-img");
+            const previewTime = document.getElementById("wa-preview-time");
+            const buttonList = document.getElementById("button-list");
+
+            function addButtonRow(label, type, value)
+            {
+                if (buttonList.children.length >= 5)
+                {
+                    return;
+                }
+
+                const row = document.createElement("div");
+                row.className = "btn-row";
+
+                const labelInput = document.createElement("input");
+                labelInput.className = "input button-label";
+                labelInput.maxLength = 60;
+                labelInput.placeholder = i18n.t("placeholder.buttonLabel");
+                labelInput.value = label || "";
+
+                const typeSelect = document.createElement("select");
+                typeSelect.className = "input button-type";
+                const flowOption = document.createElement("option");
+                flowOption.value = "flow";
+                flowOption.textContent = i18n.t("button.type.flow");
+                const urlOption = document.createElement("option");
+                urlOption.value = "url";
+                urlOption.textContent = i18n.t("button.type.url");
+                typeSelect.appendChild(flowOption);
+                typeSelect.appendChild(urlOption);
+                typeSelect.value = type === "url" ? "url" : "flow";
+
+                const valueInput = document.createElement("input");
+                valueInput.className = "input button-value";
+                valueInput.maxLength = 300;
+                valueInput.value = value || "";
+
+                function syncPlaceholder()
+                {
+                    valueInput.placeholder =
+                        typeSelect.value === "url" ? i18n.t("placeholder.buttonUrl") : i18n.t("placeholder.buttonGoto");
+                }
+                syncPlaceholder();
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "btn btn-danger";
+                remove.textContent = i18n.t("btn.remove");
+                remove.addEventListener("click", function ()
+                {
+                    row.remove();
+                    updatePreview();
+                });
+
+                labelInput.addEventListener("input", updatePreview);
+                valueInput.addEventListener("input", updatePreview);
+                typeSelect.addEventListener("change", function ()
+                {
+                    syncPlaceholder();
+                    updatePreview();
+                });
+
+                row.appendChild(labelInput);
+                row.appendChild(typeSelect);
+                row.appendChild(valueInput);
+                row.appendChild(remove);
+                buttonList.appendChild(row);
+                updatePreview();
+            }
+
+            function collectButtons()
+            {
+                return Array.from(buttonList.querySelectorAll(".btn-row"))
+                    .map(function (row)
+                    {
+                        const type = row.querySelector(".button-type").value;
+                        const value = row.querySelector(".button-value").value.trim();
+                        return {
+                            label: row.querySelector(".button-label").value.trim(),
+                            type: type,
+                            goto: type === "flow" ? value : "",
+                            url: type === "url" ? value : "",
+                        };
+                    })
+                    .filter((btn) => btn.label.length > 0);
+            }
+
+            document.getElementById("add-button").addEventListener("click", () => addButtonRow("", "flow", ""));
+
+            function formatWhatsapp(text)
+            {
+                text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                text = text.replace(/\*([^*]+)\*/g, "<b>$1</b>");
+                text = text.replace(/_([^_]+)_/g, "<i>$1</i>");
+                text = text.replace(/\n/g, "<br>");
+                return text;
+            }
+
+            function buttonsMenuHtml(buttons)
+            {
+                if (!buttons.length)
+                {
+                    return "";
+                }
+
+                const lines = buttons.map(function (btn, index)
+                {
+                    const text = btn.type === "url" && btn.url ? btn.label + ": " + btn.url : btn.label;
+                    return formatWhatsapp((index + 1) + ". " + text);
+                });
+                return "<br><br>" + lines.join("<br>");
+            }
+
+            function updatePreview()
+            {
+                const val = bodyInput.value.trim();
+                const buttons = collectButtons();
+                previewText.innerHTML = val ? formatWhatsapp(val) + buttonsMenuHtml(buttons) : i18n.t("wa.previewPlaceholder");
+                const now = new Date();
+                previewTime.textContent =
+                    now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
+            }
+
+            bodyInput.addEventListener("input", updatePreview);
+
+            function showImage(file)
+            {
+                if (!file || !file.type.startsWith("image/"))
+                {
+                    toast(i18n.t("toast.imageOnly"), true);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e)
+                {
+                    dzThumb.src = e.target.result;
+                    dzThumb.style.display = "inline-block";
+                    dzText.textContent = file.name;
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = "block";
+                    clearBtn.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function clearImage()
+            {
+                imgInput.value = "";
+                dzThumb.src = "";
+                dzThumb.style.display = "none";
+                dzText.textContent = i18n.t("dropzone.text");
+                previewImg.src = "";
+                previewImg.style.display = "none";
+                clearBtn.style.display = "none";
+            }
+
+            clearBtn.addEventListener("click", clearImage);
+            dropzone.addEventListener("click", () => imgInput.click());
+
+            imgInput.addEventListener("change", function ()
+            {
+                if (imgInput.files && imgInput.files[0])
+                {
+                    showImage(imgInput.files[0]);
+                }
+            });
+
+            ["dragenter", "dragover"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.add("dragover");
+                })
+            );
+
+            ["dragleave", "drop"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.remove("dragover");
+                })
+            );
+
+            dropzone.addEventListener("drop", function (e)
+            {
+                const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                if (file)
+                {
+                    imgInput.files = e.dataTransfer.files;
+                    showImage(file);
+                }
+            });
+
+            async function loadTemplates()
+            {
+                let templates = [];
+
+                try
+                {
+                    const res = await fetch("/templates");
+                    const json = await res.json();
+                    templates = json.templates || [];
+                }
+                catch (err)
+                {
+                    templates = [];
+                }
+
+                renderTemplateList(templates);
+            }
+
+            function renderTemplateList(templates)
+            {
+                if (!templates.length)
+                {
+                    const empty = document.createElement("p");
+                    empty.style.color = "var(--text-muted)";
+                    empty.style.margin = "0";
+                    empty.textContent = i18n.t("empty.noTemplates");
+                    templateList.innerHTML = "";
+                    templateList.appendChild(empty);
+                    return;
+                }
+
+                templateList.innerHTML = "";
+
+                templates.forEach((t) =>
+                {
+                    const row = document.createElement("div");
+                    row.className = "result-row";
+
+                    const info = document.createElement("div");
+                    const title = document.createElement("div");
+                    title.className = "num";
+                    title.textContent = t.title;
+                    const body = document.createElement("div");
+                    body.style.color = "var(--text-muted)";
+                    body.style.fontSize = "13px";
+                    body.style.marginTop = "4px";
+                    body.style.whiteSpace = "pre-wrap";
+                    body.textContent = t.body;
+
+                    info.appendChild(title);
+                    info.appendChild(body);
+
+                    if (t.image)
+                    {
+                        const thumb = document.createElement("img");
+                        thumb.src = t.image;
+                        thumb.alt = "";
+                        thumb.style.marginTop = "8px";
+                        thumb.style.maxWidth = "120px";
+                        thumb.style.borderRadius = "8px";
+                        info.appendChild(thumb);
+                    }
+
+                    const buttons = parseButtons(t.buttons);
+
+                    if (buttons.length)
+                    {
+                        const menu = document.createElement("div");
+                        menu.style.color = "var(--text-muted)";
+                        menu.style.fontSize = "12px";
+                        menu.style.marginTop = "6px";
+                        menu.textContent = buttons.map((b, i) => (i + 1) + ". " + b.label).join("  ");
+                        info.appendChild(menu);
+                    }
+
+                    const del = document.createElement("button");
+                    del.className = "btn btn-danger";
+                    del.textContent = "🗑️";
+                    del.addEventListener("click", () => deleteTemplate(t.id));
+
+                    row.appendChild(info);
+                    row.appendChild(del);
+                    templateList.appendChild(row);
+                });
+            }
+
+            document.getElementById("template-form").addEventListener("submit", async function (e)
+            {
+                e.preventDefault();
+                const title = document.getElementById("template-title").value.trim();
+                const body = document.getElementById("template-body").value.trim();
+                const imageFile = imgInput.files[0];
+
+                if (!title || !body)
+                {
+                    toast(i18n.t("toast.titleBodyRequired"), true);
+                    return;
+                }
+
+                try
+                {
+                    let imageUrl = "";
+
+                    if (imageFile)
+                    {
+                        const data = new FormData();
+                        data.append("file", imageFile);
+                        const up = await fetch("/upload", { method: "POST", body: data });
+                        const upJson = await up.json();
+
+                        if (!upJson.status)
+                        {
+                            throw new Error(upJson.message || i18n.t("toast.uploadImageFailed"));
+                        }
+
+                        imageUrl = upJson.url;
+                    }
+
+                    const res = await fetch("/templates", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title: title, body: body, image: imageUrl, buttons: collectButtons() }),
+                    });
+                    const json = await res.json();
+
+                    if (!json.status)
+                    {
+                        throw new Error(json.message || i18n.t("toast.saveTemplateFailed"));
+                    }
+
+                    e.target.reset();
+                    clearImage();
+                    buttonList.innerHTML = "";
+                    updatePreview();
+                    toast(i18n.t("toast.templateSaved"));
+                    await loadTemplates();
+                }
+                catch (err)
+                {
+                    toast(err.message || i18n.t("toast.saveTemplateFailed"), true);
+                }
+            });
+
+            async function deleteTemplate(id)
+            {
+                if (!confirm(i18n.t("confirm.deleteTemplate")))
+                {
+                    return;
+                }
+
+                try
+                {
+                    await fetch("/templates/" + encodeURIComponent(id), { method: "DELETE" });
+                    toast(i18n.t("toast.templateDeleted"));
+                    await loadTemplates();
+                }
+                catch (err)
+                {
+                    toast(i18n.t("toast.deleteTemplateFailed"), true);
+                }
+            }
+
+            loadTemplates();
+            updatePreview();
+
+            async function loadUser()
+            {
+                try
+                {
+                    const res = await fetch("/me");
+                    const json = await res.json();
+                    if (!json.status)
+                    {
+                        return;
+                    }
+
+                    const box = document.getElementById("sidebar-user");
+                    const avatar = document.createElement("img");
+                    avatar.className = "user-avatar";
+                    avatar.src = json.user.avatar || "";
+                    avatar.alt = "";
+
+                    const info = document.createElement("div");
+                    info.className = "user-info";
+                    const name = document.createElement("div");
+                    name.className = "user-name";
+                    name.textContent = json.user.name || json.user.email;
+                    const logout = document.createElement("button");
+                    logout.className = "user-logout";
+                    logout.setAttribute("data-i18n", "user.logout");
+                    logout.textContent = i18n.t("user.logout");
+                    logout.addEventListener("click", async function ()
+                    {
+                        await fetch("/auth/logout", { method: "POST" });
+                        window.location.href = "/login";
+                    });
+
+                    info.appendChild(name);
+                    info.appendChild(logout);
+                    box.appendChild(avatar);
+                    box.appendChild(info);
+                }
+                catch (err)
+                {
+                    return;
+                }
+            }
+
+            loadUser();
+
+            document.addEventListener("languagechange", function ()
+            {
+                updatePreview();
+                loadTemplates();
+            });
+        </script>
+    </body>
+</html>

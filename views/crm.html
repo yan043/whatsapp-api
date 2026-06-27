@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>CRM · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
+        <link rel="stylesheet" href="/assets/css/crm.css" />
+    </head>
+    <body>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-logo">💬</div>
+                    <div class="brand-text">
+                        <h1>WA Gateway</h1>
+                        <span data-i18n="brand.subtitle">Multi-Session API</span>
+                    </div>
+                </div>
+                <a href="/" class="nav-link"><span class="nav-icon">🔗</span> <span data-i18n="nav.connection">Koneksi</span></a>
+                <a href="/crm" class="nav-link active"><span class="nav-icon">💼</span> <span data-i18n="nav.crm">CRM</span></a>
+                <a href="/broadcast" class="nav-link"><span class="nav-icon">📢</span> <span data-i18n="nav.broadcast">Siaran</span></a>
+                <a href="/templates-page" class="nav-link"><span class="nav-icon">📝</span> <span data-i18n="nav.templates">Templat</span></a>
+                <a href="/bot-page" class="nav-link"><span class="nav-icon">🤖</span> <span data-i18n="nav.bot">Bot</span></a>
+                <div class="sidebar-footer">
+                    &copy; <span id="year"></span> <a href="https://github.com/yan043" target="_blank" rel="noopener noreferrer">yan043</a>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div class="topbar">
+                    <div class="topbar-user" id="sidebar-user"></div>
+                    <div class="topbar-right">
+                        <div class="lang-options">
+                            <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+                        </div>
+                        <div class="page-clock">
+                            <div class="clock-date" id="clock-date"></div>
+                            <div class="clock-time" id="clock-time"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-head">
+                    <div>
+                        <h2 data-i18n="page.crm.title">Inbox CRM</h2>
+                        <p data-i18n="page.crm.subtitle">Kelola percakapan masuk, beri label, status, dan catatan.</p>
+                    </div>
+                </div>
+
+                <div class="crm-shell card">
+                    <section class="crm-list">
+                        <div class="crm-list-head" data-i18n="crm.conversations">Percakapan</div>
+                        <div class="crm-filters">
+                            <input class="input" id="crm-search" maxlength="64" data-i18n-placeholder="placeholder.crmSearch" placeholder="Cari nama / nomor..." />
+                            <div class="crm-filter-row">
+                                <select class="input" id="crm-filter-label">
+                                    <option value="" data-i18n="crm.label.all">Semua Label</option>
+                                    <option value="none" data-i18n="crm.label.none">Tanpa Label</option>
+                                    <option value="lead" data-i18n="crm.label.lead">Lead</option>
+                                    <option value="customer" data-i18n="crm.label.customer">Pelanggan</option>
+                                    <option value="followup" data-i18n="crm.label.followup">Follow-up</option>
+                                </select>
+                                <select class="input" id="crm-filter-status">
+                                    <option value="" data-i18n="crm.status.all">Semua Status</option>
+                                    <option value="new" data-i18n="crm.status.new">Baru</option>
+                                    <option value="open" data-i18n="crm.status.open">Diproses</option>
+                                    <option value="done" data-i18n="crm.status.done">Selesai</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="crm-contacts" id="crm-contacts"></div>
+                    </section>
+
+                    <section class="crm-thread" id="crm-thread">
+                        <div class="crm-empty" id="crm-empty">
+                            <div class="crm-empty-icon">💬</div>
+                            <h3 class="crm-empty-title" data-i18n="crm.empty.title">Belum ada percakapan dibuka</h3>
+                            <p class="crm-empty-text" data-i18n="crm.empty">Pilih kontak di samping untuk mulai membalas pesan.</p>
+                        </div>
+
+                        <div class="crm-conv" id="crm-conv" hidden>
+                            <div class="crm-conv-head">
+                                <div class="crm-conv-head-left">
+                                    <div class="crm-conv-avatar" id="crm-conv-avatar"></div>
+                                    <div>
+                                        <div class="crm-conv-name" id="crm-conv-name"></div>
+                                        <div class="crm-conv-number" id="crm-conv-number"></div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-ghost" id="crm-toggle-detail" data-i18n="crm.detail">ℹ️ Detail</button>
+                            </div>
+
+                            <div class="crm-detail" id="crm-detail">
+                                <button type="button" class="crm-detail-close" id="crm-close-detail" aria-label="Close">&times;</button>
+                                <div class="crm-detail-row">
+                                    <label data-i18n="crm.field.label">Label</label>
+                                    <select class="input" id="crm-edit-label">
+                                        <option value="none" data-i18n="crm.label.none">Tanpa Label</option>
+                                        <option value="lead" data-i18n="crm.label.lead">Lead</option>
+                                        <option value="customer" data-i18n="crm.label.customer">Pelanggan</option>
+                                        <option value="followup" data-i18n="crm.label.followup">Follow-up</option>
+                                    </select>
+                                </div>
+                                <div class="crm-detail-row">
+                                    <label data-i18n="crm.field.status">Status</label>
+                                    <select class="input" id="crm-edit-status">
+                                        <option value="new" data-i18n="crm.status.new">Baru</option>
+                                        <option value="open" data-i18n="crm.status.open">Diproses</option>
+                                        <option value="done" data-i18n="crm.status.done">Selesai</option>
+                                    </select>
+                                </div>
+                                <div class="crm-detail-row full">
+                                    <label data-i18n="crm.field.notes">Catatan</label>
+                                    <textarea class="textarea" id="crm-edit-notes" maxlength="2000" data-i18n-placeholder="placeholder.crmNotes" placeholder="Catatan internal..."></textarea>
+                                </div>
+                                <div class="crm-detail-row full">
+                                    <button type="button" class="btn btn-primary btn-block" id="crm-save-detail" data-i18n="crm.saveDetail">💾 Simpan Detail</button>
+                                </div>
+                            </div>
+
+                            <div class="crm-messages" id="crm-messages"></div>
+
+                            <form class="crm-reply" id="crm-reply-form">
+                                <input class="input" id="crm-reply-input" maxlength="4096" data-i18n-placeholder="placeholder.crmReply" placeholder="Ketik balasan..." autocomplete="off" />
+                                <button type="submit" class="btn btn-primary" data-i18n="crm.send">Kirim</button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        <div class="toast-wrap" id="toast-wrap"></div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/assets/js/i18n.js"></script>
+        <script src="/assets/js/crm.js"></script>
+    </body>
+</html>

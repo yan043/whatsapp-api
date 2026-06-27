@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Bot · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
+        <style>
+            .dropzone
+            {
+                border: 2px dashed var(--border, #2a2f3a);
+                border-radius: 12px;
+                padding: 22px;
+                text-align: center;
+                color: var(--text-muted, #8b93a3);
+                cursor: pointer;
+                transition: border-color 0.2s, background 0.2s;
+            }
+            .dropzone.dragover
+            {
+                border-color: var(--accent, #22c55e);
+                background: rgba(34, 197, 94, 0.08);
+            }
+            .dropzone .dz-thumb
+            {
+                max-width: 120px;
+                max-height: 120px;
+                border-radius: 8px;
+                margin-top: 10px;
+                display: none;
+            }
+            .toggle-row
+            {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .toggle-row:last-child
+            {
+                border-bottom: none;
+            }
+            .toggle-pill
+            {
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                padding: 6px 16px;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                background: var(--surface-2);
+                color: var(--text-muted);
+            }
+            .toggle-pill.on
+            {
+                background: var(--grad-brand);
+                color: #fff;
+                border-color: transparent;
+            }
+            .flow-tag
+            {
+                display: inline-block;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 6px;
+                background: var(--surface-2);
+                color: var(--text-muted);
+                margin-right: 6px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-logo">💬</div>
+                    <div class="brand-text">
+                        <h1>WA Gateway</h1>
+                        <span data-i18n="brand.subtitle">Multi-Session API</span>
+                    </div>
+                </div>
+                <a href="/" class="nav-link"><span class="nav-icon">🔗</span> <span data-i18n="nav.connection">Koneksi</span></a>
+                <a href="/crm" class="nav-link"><span class="nav-icon">💼</span> <span data-i18n="nav.crm">CRM</span></a>
+                <a href="/broadcast" class="nav-link"><span class="nav-icon">📢</span> <span data-i18n="nav.broadcast">Siaran</span></a>
+                <a href="/templates-page" class="nav-link"><span class="nav-icon">📝</span> <span data-i18n="nav.templates">Templat</span></a>
+                <a href="/bot-page" class="nav-link active"><span class="nav-icon">🤖</span> <span data-i18n="nav.bot">Bot</span></a>
+                <div class="sidebar-footer">
+                    &copy; <span id="year"></span> <a href="https://github.com/yan043" target="_blank" rel="noopener noreferrer">yan043</a>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div class="topbar">
+                    <div class="topbar-user" id="sidebar-user"></div>
+                    <div class="topbar-right">
+                        <div class="lang-options">
+                            <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+                        </div>
+                        <div class="page-clock">
+                            <div class="clock-date" id="clock-date"></div>
+                            <div class="clock-time" id="clock-time"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-head">
+                    <div>
+                        <h2 data-i18n="page.bot.title">Bot WhatsApp</h2>
+                        <p data-i18n="page.bot.subtitle">Buat balasan otomatis bercabang dengan kata kunci, menu angka, dan gambar.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:22px">
+                    <h3 class="card-title" data-i18n="card.botActivation">🤖 Aktivasi Bot per Sesi</h3>
+                    <div class="hint" data-i18n="bot.activation.hint">Aktifkan bot agar sesi membalas pesan masuk secara otomatis.</div>
+                    <div id="activation-list"></div>
+                </div>
+
+                <div class="card flow-board">
+                    <div class="flow-toolbar">
+                        <div>
+                            <h3 class="card-title" data-i18n="card.flowCanvas">🧩 Peta Alur</h3>
+                            <div class="hint" data-i18n="flowCanvas.hint">Setiap kartu adalah satu alur. Tarik untuk menata; garis menghubungkan tombol ke alur tujuannya.</div>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="open-new-flow" data-i18n="card.newFlow">➕ Alur Baru</button>
+                    </div>
+                    <div class="flow-canvas" id="flow-canvas">
+                        <div class="flow-canvas-inner" id="flow-canvas-inner">
+                            <svg class="flow-wires" id="flow-wires"></svg>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="modal-overlay" id="flow-modal">
+            <div class="modal">
+                <div class="modal-head">
+                    <h3 data-i18n="card.newFlow">➕ Alur Baru</h3>
+                    <button type="button" class="modal-close" id="close-new-flow">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="flow-form">
+                        <div class="field">
+                            <label data-i18n="label.flowSession">Sesi</label>
+                            <select class="select" id="flow-session" required>
+                                <option value="" data-i18n="opt.selectSession">Pilih sesi</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label data-i18n="label.flowName">Nama Alur</label>
+                            <input class="input" id="flow-name" maxlength="255" data-i18n-placeholder="placeholder.flowName" placeholder="mis. Menu Utama" required />
+                        </div>
+                        <div class="field">
+                            <label data-i18n="label.triggerType">Pemicu</label>
+                            <select class="select" id="flow-trigger">
+                                <option value="keyword" data-i18n="trigger.keyword">Kata Kunci</option>
+                                <option value="welcome" data-i18n="trigger.welcome">Sapaan (pesan pertama)</option>
+                                <option value="fallback" data-i18n="trigger.fallback">Cadangan (tak cocok)</option>
+                            </select>
+                        </div>
+                        <div class="field" id="keyword-field">
+                            <label data-i18n="label.keyword">Kata Kunci</label>
+                            <input class="input" id="flow-keyword" maxlength="255" data-i18n-placeholder="placeholder.keyword" placeholder="mis. menu, halo" />
+                        </div>
+                        <div class="field" id="match-field">
+                            <label data-i18n="label.matchMode">Kecocokan</label>
+                            <select class="select" id="flow-match">
+                                <option value="contains" data-i18n="match.contains">Mengandung</option>
+                                <option value="exact" data-i18n="match.exact">Persis</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label data-i18n="label.replyBody">Balasan</label>
+                            <textarea class="textarea" id="flow-reply" maxlength="5000" data-i18n-placeholder="placeholder.replyBody" placeholder="Tulis balasan bot... *tebal* _miring_" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label data-i18n="label.imageOptional">Gambar (opsional)</label>
+                            <div class="dropzone" id="dropzone">
+                                <div id="dz-text" data-i18n="dropzone.text">Seret &amp; lepas gambar di sini, atau klik untuk memilih</div>
+                                <img class="dz-thumb" id="dz-thumb" alt="thumbnail" />
+                            </div>
+                            <button type="button" class="btn btn-danger btn-block" id="clear-image" style="display:none;margin-top:10px" data-i18n="btn.removeImage">🗑️ Hapus Gambar</button>
+                            <input type="file" id="flow-image" accept="image/*" hidden />
+                        </div>
+                        <div class="field">
+                            <label data-i18n="label.buttons">Tombol (menu angka)</label>
+                            <div class="hint" data-i18n="buttons.hint">Penerima membalas dengan angka untuk memilih. Maksimal 5 tombol.</div>
+                            <div id="button-list"></div>
+                            <button type="button" class="btn btn-ghost btn-block" id="add-button" data-i18n="btn.addButton">➕ Tambah Tombol</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" data-i18n="btn.saveFlow">💾 Simpan Alur</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-wrap" id="toast-wrap"></div>
+
+        <script src="/assets/js/i18n.js"></script>
+        <script>
+            document.getElementById("year").textContent = new Date().getFullYear();
+
+            function startClock()
+            {
+                const dateEl = document.getElementById("clock-date");
+                const timeEl = document.getElementById("clock-time");
+                if (!dateEl || !timeEl)
+                {
+                    return;
+                }
+
+                const dateFmt = new Intl.DateTimeFormat("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+
+                const tick = function ()
+                {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, "0");
+                    const mm = String(now.getMinutes()).padStart(2, "0");
+                    const ss = String(now.getSeconds()).padStart(2, "0");
+                    dateEl.textContent = dateFmt.format(now);
+                    timeEl.textContent = hh + ":" + mm + ":" + ss;
+                };
+
+                tick();
+                setInterval(tick, 1000);
+            }
+
+            startClock();
+
+            function toast(message, isError)
+            {
+                const el = document.createElement("div");
+                el.className = "toast" + (isError ? " error" : "");
+                el.textContent = message;
+                document.getElementById("toast-wrap").appendChild(el);
+                setTimeout(() => el.remove(), 3500);
+            }
+
+            const sessionSelect = document.getElementById("flow-session");
+            const triggerSelect = document.getElementById("flow-trigger");
+            const keywordField = document.getElementById("keyword-field");
+            const matchField = document.getElementById("match-field");
+            const activationList = document.getElementById("activation-list");
+            const imgInput = document.getElementById("flow-image");
+            const dropzone = document.getElementById("dropzone");
+            const dzText = document.getElementById("dz-text");
+            const dzThumb = document.getElementById("dz-thumb");
+            const clearBtn = document.getElementById("clear-image");
+            const buttonList = document.getElementById("button-list");
+            const canvas = document.getElementById("flow-canvas");
+            const canvasInner = document.getElementById("flow-canvas-inner");
+            const canvasWires = document.getElementById("flow-wires");
+            const flowModal = document.getElementById("flow-modal");
+
+            function openFlowModal()
+            {
+                flowModal.classList.add("show");
+            }
+
+            function closeFlowModal()
+            {
+                flowModal.classList.remove("show");
+            }
+
+            document.getElementById("open-new-flow").addEventListener("click", openFlowModal);
+            document.getElementById("close-new-flow").addEventListener("click", closeFlowModal);
+            flowModal.addEventListener("click", function (e)
+            {
+                if (e.target === flowModal)
+                {
+                    closeFlowModal();
+                }
+            });
+
+            function toggleKeywordField()
+            {
+                const show = triggerSelect.value === "keyword";
+                keywordField.style.display = show ? "block" : "none";
+                matchField.style.display = show ? "block" : "none";
+            }
+
+            triggerSelect.addEventListener("change", toggleKeywordField);
+            toggleKeywordField();
+
+            function addButtonRow(label, type, value)
+            {
+                if (buttonList.children.length >= 5)
+                {
+                    return;
+                }
+
+                const row = document.createElement("div");
+                row.className = "btn-row";
+
+                const labelInput = document.createElement("input");
+                labelInput.className = "input button-label";
+                labelInput.maxLength = 60;
+                labelInput.placeholder = i18n.t("placeholder.buttonLabel");
+                labelInput.value = label || "";
+
+                const typeSelect = document.createElement("select");
+                typeSelect.className = "input button-type";
+                const flowOption = document.createElement("option");
+                flowOption.value = "flow";
+                flowOption.textContent = i18n.t("button.type.flow");
+                const urlOption = document.createElement("option");
+                urlOption.value = "url";
+                urlOption.textContent = i18n.t("button.type.url");
+                typeSelect.appendChild(flowOption);
+                typeSelect.appendChild(urlOption);
+                typeSelect.value = type === "url" ? "url" : "flow";
+
+                const valueInput = document.createElement("input");
+                valueInput.className = "input button-value";
+                valueInput.maxLength = 300;
+                valueInput.value = value || "";
+
+                function syncPlaceholder()
+                {
+                    valueInput.placeholder =
+                        typeSelect.value === "url" ? i18n.t("placeholder.buttonUrl") : i18n.t("placeholder.buttonGoto");
+                }
+                syncPlaceholder();
+                typeSelect.addEventListener("change", syncPlaceholder);
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "btn btn-danger";
+                remove.textContent = i18n.t("btn.remove");
+                remove.addEventListener("click", () => row.remove());
+
+                row.appendChild(labelInput);
+                row.appendChild(typeSelect);
+                row.appendChild(valueInput);
+                row.appendChild(remove);
+                buttonList.appendChild(row);
+            }
+
+            function collectButtons()
+            {
+                return Array.from(buttonList.querySelectorAll(".btn-row"))
+                    .map(function (row)
+                    {
+                        const type = row.querySelector(".button-type").value;
+                        const value = row.querySelector(".button-value").value.trim();
+                        return {
+                            label: row.querySelector(".button-label").value.trim(),
+                            type: type,
+                            goto: type === "flow" ? value : "",
+                            url: type === "url" ? value : "",
+                        };
+                    })
+                    .filter((btn) => btn.label.length > 0);
+            }
+
+            document.getElementById("add-button").addEventListener("click", () => addButtonRow("", "flow", ""));
+
+            function parseButtons(raw)
+            {
+                if (!raw)
+                {
+                    return [];
+                }
+
+                try
+                {
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                }
+                catch (err)
+                {
+                    return [];
+                }
+            }
+
+            function escapeAttr(value)
+            {
+                const div = document.createElement("div");
+                div.textContent = value == null ? "" : value;
+                return div.innerHTML;
+            }
+
+            function showImage(file)
+            {
+                if (!file || !file.type.startsWith("image/"))
+                {
+                    toast(i18n.t("toast.imageOnly"), true);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e)
+                {
+                    dzThumb.src = e.target.result;
+                    dzThumb.style.display = "inline-block";
+                    dzText.textContent = file.name;
+                    clearBtn.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function clearImage()
+            {
+                imgInput.value = "";
+                dzThumb.src = "";
+                dzThumb.style.display = "none";
+                dzText.textContent = i18n.t("dropzone.text");
+                clearBtn.style.display = "none";
+            }
+
+            clearBtn.addEventListener("click", clearImage);
+            dropzone.addEventListener("click", () => imgInput.click());
+
+            imgInput.addEventListener("change", function ()
+            {
+                if (imgInput.files && imgInput.files[0])
+                {
+                    showImage(imgInput.files[0]);
+                }
+            });
+
+            ["dragenter", "dragover"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.add("dragover");
+                })
+            );
+
+            ["dragleave", "drop"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.remove("dragover");
+                })
+            );
+
+            dropzone.addEventListener("drop", function (e)
+            {
+                const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                if (file)
+                {
+                    imgInput.files = e.dataTransfer.files;
+                    showImage(file);
+                }
+            });
+
+            async function loadBot()
+            {
+                let data = { flows: [], sessions: [], settings: {} };
+
+                try
+                {
+                    const res = await fetch("/bot/flows");
+                    const json = await res.json();
+                    if (json.status)
+                    {
+                        data = json;
+                    }
+                }
+                catch (err)
+                {
+                    data = { flows: [], sessions: [], settings: {} };
+                }
+
+                renderSessions(data.sessions);
+                renderActivation(data.sessions, data.settings);
+                renderFlows(data.flows);
+            }
+
+            function renderSessions(sessions)
+            {
+                sessionSelect.innerHTML =
+                    '<option value="">' + escapeAttr(i18n.t("opt.selectSession")) + "</option>" +
+                    sessions.map((s) => '<option value="' + escapeAttr(s.id) + '">' + escapeAttr(s.id) + "</option>").join("");
+            }
+
+            function renderActivation(sessions, settings)
+            {
+                activationList.innerHTML = "";
+
+                if (!sessions.length)
+                {
+                    const empty = document.createElement("p");
+                    empty.style.color = "var(--text-muted)";
+                    empty.style.margin = "0";
+                    empty.textContent = i18n.t("empty.noSessionsForBot");
+                    activationList.appendChild(empty);
+                    return;
+                }
+
+                sessions.forEach((s) =>
+                {
+                    const row = document.createElement("div");
+                    row.className = "toggle-row";
+
+                    const name = document.createElement("div");
+                    name.style.fontWeight = "600";
+                    name.textContent = s.id;
+
+                    const pill = document.createElement("button");
+                    pill.type = "button";
+                    const on = settings[s.id] === true;
+                    pill.className = "toggle-pill" + (on ? " on" : "");
+                    pill.textContent = on ? i18n.t("bot.on") : i18n.t("bot.off");
+                    pill.addEventListener("click", () => toggleBot(s.id, !pill.classList.contains("on"), pill));
+
+                    row.appendChild(name);
+                    row.appendChild(pill);
+                    activationList.appendChild(row);
+                });
+            }
+
+            async function toggleBot(sessionId, enabled, pill)
+            {
+                try
+                {
+                    const res = await fetch("/bot/settings", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ session_id: sessionId, enabled: enabled }),
+                    });
+                    const json = await res.json();
+
+                    if (!json.status)
+                    {
+                        throw new Error();
+                    }
+
+                    pill.classList.toggle("on", enabled);
+                    pill.textContent = enabled ? i18n.t("bot.on") : i18n.t("bot.off");
+                    toast(i18n.t("toast.botToggled"));
+                }
+                catch (err)
+                {
+                    toast(i18n.t("toast.flowSaveFailed"), true);
+                }
+            }
+
+            const nodePositions = {};
+
+            function renderFlows(flows)
+            {
+                renderCanvas(flows);
+            }
+
+            function trigIcon(type)
+            {
+                if (type === "welcome") return "👋";
+                if (type === "fallback") return "↩️";
+                return "🔑";
+            }
+
+            function buildNode(flow, index)
+            {
+                const node = document.createElement("div");
+                node.className = "flow-node";
+                node.dataset.flowId = String(flow.id);
+                node.dataset.keyword = (flow.keyword || "").trim().toLowerCase();
+                node.style.animationDelay = index * 0.05 + "s";
+
+                const head = document.createElement("div");
+                head.className = "flow-node-head " + flow.trigger_type;
+                const icon = document.createElement("span");
+                icon.className = "flow-node-icon";
+                icon.textContent = trigIcon(flow.trigger_type);
+                const nm = document.createElement("span");
+                nm.className = "flow-node-name";
+                nm.textContent = flow.name;
+                head.appendChild(icon);
+                head.appendChild(nm);
+                if (flow.keyword)
+                {
+                    const kw = document.createElement("span");
+                    kw.className = "flow-node-kw";
+                    kw.textContent = flow.keyword;
+                    head.appendChild(kw);
+                }
+
+                const portIn = document.createElement("div");
+                portIn.className = "flow-node-port-in";
+
+                const body = document.createElement("div");
+                body.className = "flow-node-body";
+                body.textContent = flow.reply_body;
+
+                node.appendChild(head);
+                node.appendChild(portIn);
+                node.appendChild(body);
+
+                parseButtons(flow.buttons).forEach((btn, i) =>
+                {
+                    const port = document.createElement("div");
+                    port.className = "flow-port";
+                    if (btn.type === "flow" && btn.goto)
+                    {
+                        port.dataset.goto = btn.goto.trim().toLowerCase();
+                    }
+
+                    const left = document.createElement("div");
+                    left.className = "flow-port-label";
+                    const num = document.createElement("span");
+                    num.className = "flow-port-num";
+                    num.textContent = String(i + 1);
+                    const lbl = document.createElement("span");
+                    lbl.textContent = btn.label;
+                    left.appendChild(num);
+                    left.appendChild(lbl);
+
+                    const tag = document.createElement("span");
+                    tag.className = "flow-port-type " + (btn.type === "url" ? "url" : "flow");
+                    tag.textContent = btn.type === "url" ? i18n.t("button.type.url") : i18n.t("button.type.flow");
+
+                    port.appendChild(left);
+                    port.appendChild(tag);
+
+                    if (btn.type === "flow" && btn.goto)
+                    {
+                        const dot = document.createElement("div");
+                        dot.className = "flow-port-dot";
+                        port.appendChild(dot);
+                    }
+
+                    node.appendChild(port);
+                });
+
+                const foot = document.createElement("div");
+                foot.className = "flow-node-foot";
+
+                const togglePill = document.createElement("button");
+                togglePill.type = "button";
+                const on = flow.enabled === 1;
+                togglePill.className = "toggle-pill" + (on ? " on" : "");
+                togglePill.textContent = on ? i18n.t("bot.on") : i18n.t("bot.off");
+                togglePill.addEventListener("pointerdown", (e) => e.stopPropagation());
+                togglePill.addEventListener("click", () => toggleFlow(flow.id, !togglePill.classList.contains("on"), togglePill));
+
+                const del = document.createElement("button");
+                del.type = "button";
+                del.className = "btn btn-danger flow-node-del";
+                del.textContent = "🗑️";
+                del.addEventListener("pointerdown", (e) => e.stopPropagation());
+                del.addEventListener("click", () => deleteFlow(flow.id));
+
+                foot.appendChild(togglePill);
+                foot.appendChild(del);
+                node.appendChild(foot);
+
+                return node;
+            }
+
+            function renderCanvas(flows)
+            {
+                canvasInner.querySelectorAll(".flow-node, .flow-canvas-empty").forEach((el) => el.remove());
+                canvasWires.innerHTML = "";
+
+                if (!flows.length)
+                {
+                    const empty = document.createElement("div");
+                    empty.className = "flow-canvas-empty";
+                    const big = document.createElement("div");
+                    big.className = "big";
+                    big.textContent = "🧩";
+                    const txt = document.createElement("div");
+                    txt.textContent = i18n.t("empty.noFlows");
+                    empty.appendChild(big);
+                    empty.appendChild(txt);
+                    canvasInner.appendChild(empty);
+                    return;
+                }
+
+                const cols = 3;
+                const gapX = 300;
+                const gapY = 250;
+
+                flows.forEach((flow, index) =>
+                {
+                    const node = buildNode(flow, index);
+                    const saved = nodePositions[flow.id];
+                    const x = saved ? saved.x : 20 + (index % cols) * gapX;
+                    const y = saved ? saved.y : 20 + Math.floor(index / cols) * gapY;
+                    node.style.left = x + "px";
+                    node.style.top = y + "px";
+                    nodePositions[flow.id] = { x: x, y: y };
+                    makeDraggable(node);
+                    canvasInner.appendChild(node);
+                });
+
+                drawWires();
+            }
+
+            function drawWires()
+            {
+                canvasWires.innerHTML = "";
+                const base = canvasInner.getBoundingClientRect();
+                const nodes = Array.from(canvasInner.querySelectorAll(".flow-node"));
+                const byKeyword = {};
+                nodes.forEach((n) =>
+                {
+                    if (n.dataset.keyword) byKeyword[n.dataset.keyword] = n;
+                });
+
+                nodes.forEach((node) =>
+                {
+                    node.querySelectorAll(".flow-port[data-goto]").forEach((port) =>
+                    {
+                        const target = byKeyword[port.dataset.goto];
+                        if (!target || target === node) return;
+
+                        const dot = port.querySelector(".flow-port-dot").getBoundingClientRect();
+                        const inPort = target.querySelector(".flow-node-port-in").getBoundingClientRect();
+                        const x1 = dot.left + dot.width / 2 - base.left;
+                        const y1 = dot.top + dot.height / 2 - base.top;
+                        const x2 = inPort.left + inPort.width / 2 - base.left;
+                        const y2 = inPort.top + inPort.height / 2 - base.top;
+                        const dx = Math.max(50, Math.abs(x2 - x1) * 0.5);
+
+                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path.setAttribute(
+                            "d",
+                            "M " + x1 + " " + y1 + " C " + (x1 + dx) + " " + y1 + ", " + (x2 - dx) + " " + y2 + ", " + x2 + " " + y2
+                        );
+                        path.setAttribute("class", "flow-wire");
+                        path.dataset.from = node.dataset.flowId;
+                        path.dataset.to = target.dataset.flowId;
+                        canvasWires.appendChild(path);
+                    });
+                });
+            }
+
+            function highlightNode(node, on)
+            {
+                const id = node.dataset.flowId;
+                const wires = Array.from(canvasWires.querySelectorAll(".flow-wire"));
+                node.classList.toggle("lit", on);
+                wires.forEach((w) =>
+                {
+                    const linked = w.dataset.from === id || w.dataset.to === id;
+                    w.classList.toggle("lit", on && linked);
+                    w.classList.toggle("dim", on && !linked);
+                });
+            }
+
+            function makeDraggable(node)
+            {
+                node.addEventListener("mouseenter", () => highlightNode(node, true));
+                node.addEventListener("mouseleave", () => highlightNode(node, false));
+
+                node.addEventListener("pointerdown", function (e)
+                {
+                    if (e.button !== 0) return;
+                    e.preventDefault();
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const origLeft = parseFloat(node.style.left) || 0;
+                    const origTop = parseFloat(node.style.top) || 0;
+                    node.classList.add("dragging");
+
+                    const move = function (ev)
+                    {
+                        const nx = Math.max(0, origLeft + (ev.clientX - startX));
+                        const ny = Math.max(0, origTop + (ev.clientY - startY));
+                        node.style.left = nx + "px";
+                        node.style.top = ny + "px";
+                        nodePositions[node.dataset.flowId] = { x: nx, y: ny };
+                        drawWires();
+                        highlightNode(node, true);
+                    };
+
+                    const up = function ()
+                    {
+                        node.classList.remove("dragging");
+                        document.removeEventListener("pointermove", move);
+                        document.removeEventListener("pointerup", up);
+                    };
+
+                    document.addEventListener("pointermove", move);
+                    document.addEventListener("pointerup", up);
+                });
+            }
+
+            async function toggleFlow(id, enabled, pill)
+            {
+                try
+                {
+                    await fetch("/bot/flows/" + encodeURIComponent(id), {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ enabled: enabled }),
+                    });
+                    pill.classList.toggle("on", enabled);
+                    pill.textContent = enabled ? i18n.t("bot.on") : i18n.t("bot.off");
+                }
+                catch (err)
+                {
+                    toast(i18n.t("toast.flowSaveFailed"), true);
+                }
+            }
+
+            async function deleteFlow(id)
+            {
+                if (!confirm(i18n.t("confirm.deleteFlow")))
+                {
+                    return;
+                }
+
+                try
+                {
+                    await fetch("/bot/flows/" + encodeURIComponent(id), { method: "DELETE" });
+                    toast(i18n.t("toast.flowDeleted"));
+                    await loadBot();
+                }
+                catch (err)
+                {
+                    toast(i18n.t("toast.flowSaveFailed"), true);
+                }
+            }
+
+            document.getElementById("flow-form").addEventListener("submit", async function (e)
+            {
+                e.preventDefault();
+
+                const sessionId = sessionSelect.value;
+                const name = document.getElementById("flow-name").value.trim();
+                const triggerType = triggerSelect.value;
+                const keyword = document.getElementById("flow-keyword").value.trim();
+                const reply = document.getElementById("flow-reply").value.trim();
+
+                if (!sessionId || !name || !reply)
+                {
+                    toast(i18n.t("toast.flowFieldsRequired"), true);
+                    return;
+                }
+
+                if (triggerType === "keyword" && !keyword)
+                {
+                    toast(i18n.t("toast.keywordRequired"), true);
+                    return;
+                }
+
+                try
+                {
+                    let imageUrl = "";
+
+                    if (imgInput.files[0])
+                    {
+                        const data = new FormData();
+                        data.append("file", imgInput.files[0]);
+                        const up = await fetch("/upload", { method: "POST", body: data });
+                        const upJson = await up.json();
+
+                        if (!upJson.status)
+                        {
+                            throw new Error(upJson.message || i18n.t("toast.flowSaveFailed"));
+                        }
+
+                        imageUrl = upJson.url;
+                    }
+
+                    const res = await fetch("/bot/flows", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            name: name,
+                            trigger_type: triggerType,
+                            keyword: keyword,
+                            match_mode: document.getElementById("flow-match").value,
+                            reply_body: reply,
+                            reply_image: imageUrl,
+                            buttons: collectButtons(),
+                        }),
+                    });
+                    const json = await res.json();
+
+                    if (!json.status)
+                    {
+                        throw new Error(json.message || i18n.t("toast.flowSaveFailed"));
+                    }
+
+                    e.target.reset();
+                    clearImage();
+                    buttonList.innerHTML = "";
+                    toggleKeywordField();
+                    closeFlowModal();
+                    toast(i18n.t("toast.flowSaved"));
+                    await loadBot();
+                }
+                catch (err)
+                {
+                    toast(err.message || i18n.t("toast.flowSaveFailed"), true);
+                }
+            });
+
+            async function loadUser()
+            {
+                try
+                {
+                    const res = await fetch("/me");
+                    const json = await res.json();
+                    if (!json.status)
+                    {
+                        return;
+                    }
+
+                    const box = document.getElementById("sidebar-user");
+                    const avatar = document.createElement("img");
+                    avatar.className = "user-avatar";
+                    avatar.src = json.user.avatar || "";
+                    avatar.alt = "";
+
+                    const info = document.createElement("div");
+                    info.className = "user-info";
+                    const name = document.createElement("div");
+                    name.className = "user-name";
+                    name.textContent = json.user.name || json.user.email;
+                    const logout = document.createElement("button");
+                    logout.className = "user-logout";
+                    logout.setAttribute("data-i18n", "user.logout");
+                    logout.textContent = i18n.t("user.logout");
+                    logout.addEventListener("click", async function ()
+                    {
+                        await fetch("/auth/logout", { method: "POST" });
+                        window.location.href = "/login";
+                    });
+
+                    info.appendChild(name);
+                    info.appendChild(logout);
+                    box.appendChild(avatar);
+                    box.appendChild(info);
+                }
+                catch (err)
+                {
+                    return;
+                }
+            }
+
+            loadUser();
+            loadBot();
+
+            document.addEventListener("languagechange", function ()
+            {
+                toggleKeywordField();
+                loadBot();
+            });
+        </script>
+    </body>
+</html>

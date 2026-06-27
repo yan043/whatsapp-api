@@ -2,294 +2,380 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Device Sessions - WhatsApp API</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-        <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <title>Dasbor · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-        <style>
-            body {
-                background: #f7f9fa;
-                font-family: "Inter", sans-serif;
-                min-height: 100vh;
-            }
-
-            .client-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                justify-content: center;
-                max-height: 80vh;
-                overflow-y: auto;
-                padding-right: 6px;
-            }
-
-            .client {
-                border: 0.1px solid #ccc;
-                padding: 10px 8px;
-                box-sizing: border-box;
-                margin: 0;
-                background: #fff;
-                border-radius: 8px;
-                box-shadow: 0 1px 10px rgba(52, 152, 219, 0.06);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                position: relative;
-
-                flex: 1 1 calc(50% - 20px);
-                max-width: 220px;
-                text-align: center;
-            }
-
-            .client .timestamp {
-                position: absolute;
-                top: 8px;
-                right: 12px;
-                font-size: 10px;
-                color: #666;
-                font-weight: 500;
-            }
-
-            .hide {
-                display: none;
-            }
-
-            .client-description {
-                border-color: #d4d4d4;
-                font-size: 13px;
-            }
-
-            .support-banner {
-                width: 100%;
-                background: #eaf6fb;
-                color: #3498db;
-                padding: 10px 0;
-                text-align: center;
-                font-weight: 500;
-                overflow: hidden;
-                position: relative;
-            }
-
-            .support-banner span {
-                display: inline-block;
-                animation: marquee 12s linear infinite;
-            }
-
-            @keyframes marquee {
-                0% {
-                    transform: translateX(100%);
-                }
-                100% {
-                    transform: translateX(-100%);
-                }
-            }
-
-            .client ul {
-                padding-left: 12px;
-                margin: 0;
-                width: 100%;
-                font-size: 13px;
-            }
-
-            .client img#qrcode {
-                max-width: 120px;
-                margin: 10px 0;
-                display: none;
-            }
-
-            .login-box {
-                background: #fff;
-                border-radius: 10px;
-                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-                padding: 20px 16px 16px 16px;
-                margin: 20px 0;
-            }
-
-            .login-title h2 {
-                color: #3498db;
-                font-weight: 700;
-                margin-bottom: 18px;
-                letter-spacing: 1px;
-            }
-
-            .btn-info {
-                background: #3498db;
-                border: none;
-                font-weight: 600;
-                letter-spacing: 1px;
-            }
-
-            .btn-info:hover {
-                background: #217dbb;
-            }
-
-            @media (max-width: 991px) {
-                .login-box {
-                    margin: 20px 0;
-                    padding: 18px 8px 14px 8px;
-                }
-
-                .client {
-                    flex: 1 1 100%;
-                    max-width: 100%;
-                }
-            }
-        </style>
-
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
     </head>
     <body>
-        <header>
-            <div class="support-banner">
-                <span>
-                    You can support the maintainer of this project through
-                    <b>DANA +6285248804480</b> — Thanks Before :)
-                </span>
-            </div>
-        </header>
-
-        <main>
-            <div class="container h-100">
-                <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
-                    <div class="col-lg-6 d-flex align-items-center">
-                        <div class="login-box w-100">
-                            <div class="login-title">
-                                <h2 class="text-center text-info">Device Sessions</h2>
-                            </div>
-                            <form class="form-container" onsubmit="return false;">
-                                <div class="input-group custom mb-3">
-                                <input type="text" class="form-control" placeholder="Sender ID" id="client-id" required />
-                                </div>
-                                <div class="input-group custom mb-3">
-                                    <textarea rows="4" class="form-control client-description" id="client-description" placeholder="Enter a Description" required></textarea>
-                                </div>
-                                <div class="input-group mb-0">
-                                    <button type="submit" class="btn btn-info btn-lg btn-block add-client-btn">
-                                        Create
-                                    </button>
-                                </div>
-                            </form>
-                            <footer>
-                                <p class="text-muted mt-4 mb-0 text-center">
-                                    <small>
-                                        &copy; <span id="year"></span> author by
-                                        <a href="https://github.com/yan043" style="color: #6c757d !important;">Mahdian</a>
-                                    </small>
-                                </p>
-                            </footer>
-                        </div>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-logo">💬</div>
+                    <div class="brand-text">
+                        <h1>WA Gateway</h1>
+                        <span data-i18n="brand.subtitle">Multi-Session API</span>
                     </div>
-                    <div class="col-lg-6 d-flex flex-column align-items-center">
-                        <div class="w-100">
-                            <div class="row justify-content-center client-container">
-                                <div class="client hide col-12">
-                                    <div class="timestamp"></div>
-                                    <h3 class="title text-info"></h3>
-                                    <p class="text-muted description"></p>
-                                    <img src="" id="qrcode" alt="QR Code" />
-                                    <ul class="logs"></ul>
-                                </div>
-                            </div>
+                </div>
+                <a href="/" class="nav-link active"><span class="nav-icon">🔗</span> <span data-i18n="nav.connection">Koneksi</span></a>
+                <a href="/crm" class="nav-link"><span class="nav-icon">💼</span> <span data-i18n="nav.crm">CRM</span></a>
+                <a href="/broadcast" class="nav-link"><span class="nav-icon">📢</span> <span data-i18n="nav.broadcast">Siaran</span></a>
+                <a href="/templates-page" class="nav-link"><span class="nav-icon">📝</span> <span data-i18n="nav.templates">Templat</span></a>
+                <a href="/bot-page" class="nav-link"><span class="nav-icon">🤖</span> <span data-i18n="nav.bot">Bot</span></a>
+                <div class="sidebar-footer">
+                    &copy; <span id="year"></span> <a href="https://github.com/yan043" target="_blank" rel="noopener noreferrer">yan043</a>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div class="topbar">
+                    <div class="topbar-user" id="sidebar-user"></div>
+                    <div class="topbar-right">
+                        <div class="lang-options">
+                            <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+                        </div>
+                        <div class="page-clock">
+                            <div class="clock-date" id="clock-date"></div>
+                            <div class="clock-time" id="clock-time"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
+                <div class="page-head">
+                    <div>
+                        <h2 data-i18n="page.connection.title">Koneksi</h2>
+                        <p data-i18n="page.connection.subtitle">Buat sesi, pindai kode QR, dan kelola perangkat WhatsApp yang tertaut.</p>
+                    </div>
+                </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon green">📱</div>
+                        <div>
+                            <div class="stat-value" id="stat-total">0</div>
+                            <div class="stat-label" data-i18n="stat.totalSessions">Total Sesi</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">✅</div>
+                        <div>
+                            <div class="stat-value" id="stat-ready">0</div>
+                            <div class="stat-label" data-i18n="stat.connected">Terhubung</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon amber">⏳</div>
+                        <div>
+                            <div class="stat-value" id="stat-pending">0</div>
+                            <div class="stat-label" data-i18n="stat.pending">Menunggu</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.newSession">➕ Sesi Baru</h3>
+                        <form id="create-form">
+                            <div class="field">
+                                <label data-i18n="label.sessionId">ID Sesi</label>
+                                <input class="input" id="client-id" data-i18n-placeholder="placeholder.sessionId" placeholder="mis. perangkat-utama" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" data-i18n="btn.createConnect">Buat &amp; Hubungkan</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.activeSessions">🔌 Sesi Aktif</h3>
+                        <div class="sessions-grid" id="sessions-grid"></div>
+                        <div class="empty-state" id="empty-state">
+                            <div class="big-icon">📭</div>
+                            <div data-i18n="empty.noSessions">Belum ada sesi. Buat satu untuk memulai.</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="toast-wrap" id="toast-wrap"></div>
+
+        <script src="/assets/js/i18n.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
         <script>
-            $(document).ready(function () {
-                document.getElementById("year").textContent = new Date().getFullYear();
+            document.getElementById("year").textContent = new Date().getFullYear();
 
-                const clientIdCheck = document.getElementById("client-id");
-                clientIdCheck.addEventListener("input", function (event) {
-                    const regex = /^[a-zA-Z0-9_-]+$/;
-                    const inputValue = event.target.value;
-                    if (!regex.test(inputValue)) {
-                        event.target.value = inputValue.slice(0, -1);
+            function startClock()
+            {
+                const dateEl = document.getElementById("clock-date");
+                const timeEl = document.getElementById("clock-time");
+                if (!dateEl || !timeEl)
+                {
+                    return;
+                }
+
+                const dateFmt = new Intl.DateTimeFormat("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+
+                const tick = function ()
+                {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, "0");
+                    const mm = String(now.getMinutes()).padStart(2, "0");
+                    const ss = String(now.getSeconds()).padStart(2, "0");
+                    dateEl.textContent = dateFmt.format(now);
+                    timeEl.textContent = hh + ":" + mm + ":" + ss;
+                };
+
+                tick();
+                setInterval(tick, 1000);
+            }
+
+            startClock();
+
+            const socket = io();
+            const grid = document.getElementById("sessions-grid");
+            const emptyState = document.getElementById("empty-state");
+
+            function statusText(status)
+            {
+                return i18n.t("status." + status);
+            }
+
+            function toast(message, isError)
+            {
+                const el = document.createElement("div");
+                el.className = "toast" + (isError ? " error" : "");
+                el.textContent = message;
+                document.getElementById("toast-wrap").appendChild(el);
+                setTimeout(() => el.remove(), 3500);
+            }
+
+            function refreshStats()
+            {
+                const cards = grid.querySelectorAll(".session-card");
+                let ready = 0;
+                let pending = 0;
+
+                cards.forEach((card) =>
+                {
+                    const status = card.dataset.status;
+                    if (status === "ready")
+                    {
+                        ready++;
+                    }
+                    else if (["qr", "authenticated", "initializing"].includes(status))
+                    {
+                        pending++;
                     }
                 });
 
-                var socket = io();
+                document.getElementById("stat-total").textContent = cards.length;
+                document.getElementById("stat-ready").textContent = ready;
+                document.getElementById("stat-pending").textContent = pending;
+                emptyState.style.display = cards.length ? "none" : "block";
+            }
 
-                $(".add-client-btn").click(function () {
-                    var clientId = $("#client-id").val();
-                    var clientDescription = $("#client-description").val();
-                    if (!clientId || !clientDescription) return;
+            function escapeHtml(value)
+            {
+                const div = document.createElement("div");
+                div.textContent = value == null ? "" : value;
+                return div.innerHTML;
+            }
 
-                    var template = $(".client").first().clone().removeClass("hide").addClass(clientId);
+            function renderCard(session)
+            {
+                const status = session.status || "offline";
+                const card = document.createElement("div");
+                card.className = "session-card";
+                card.id = "session-" + session.id;
+                card.dataset.status = status;
+                card.innerHTML =
+                    '<div class="session-top">' +
+                        '<div>' +
+                            '<div class="session-id">' + escapeHtml(session.id) + '</div>' +
+                            '<div class="session-desc">' + escapeHtml(session.description) + '</div>' +
+                        '</div>' +
+                        '<span class="badge ' + status + '"><span class="dot"></span>' + statusText(status) + '</span>' +
+                    '</div>' +
+                    '<div class="qr-wrap"><img alt="QR Code" /></div>' +
+                    '<div class="qr-hint"></div>' +
+                    '<div class="session-actions">' +
+                        '<button class="btn btn-danger btn-block logout-btn">Keluar</button>' +
+                    '</div>';
 
-                    var now = new Date();
-                    var timestamp = now.getFullYear() + '-' +
-                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(now.getDate()).padStart(2, '0') + ' ' +
-                        String(now.getHours()).padStart(2, '0') + ':' +
-                        String(now.getMinutes()).padStart(2, '0') + ':' +
-                        String(now.getSeconds()).padStart(2, '0');
-
-                    template.find(".title").html(clientId);
-                    template.find(".description").html(clientDescription);
-                    template.find(".timestamp").html(timestamp);
-                    template.find(".logs").empty();
-                    template.find("#qrcode").hide();
-                    $(".client-container").append(template);
-
-                    socket.emit("create-session", {
-                        id: clientId,
-                        description: clientDescription,
-                    });
-                });
-
-                socket.on("init", function (data) {
-                    $(".client-container .client").not(":first").remove();
-
-                    for (var i = 0; i < data.length; i++) {
-                        var session = data[i];
-                        var clientId = session.id;
-                        var clientDescription = session.description;
-                        var template = $(".client").first().clone().removeClass("hide").addClass(clientId);
-
-                        template.find(".title").html(clientId);
-                        template.find(".description").html(clientDescription);
-                        template.find(".logs").empty();
-                        template.find("#qrcode").hide();
-                        $(".client-container").append(template);
-
-                        if (session.ready) {
-                            $(`.client.${session.id} .logs`).append($("<li>").text("Whatsapp is Ready!"));
-                        } else {
-                            $(`.client.${session.id} .logs`).append($("<li>").text("Connecting..."));
-                        }
+                card.querySelector(".logout-btn").addEventListener("click", function ()
+                {
+                    if (confirm(i18n.t("confirm.logoutSession", { id: session.id })))
+                    {
+                        socket.emit("logout-session", { id: session.id });
+                        toast(i18n.t("toast.loggingOut", { id: session.id }));
                     }
                 });
 
-                socket.on("remove-session", function (id) {
-                    $(`.client.${id}`).remove();
-                });
+                grid.appendChild(card);
+                refreshStats();
+            }
 
-                socket.on("message", function (data) {
-                    $(`.client.${data.id} .logs`).append($("<li>").text(data.text));
-                });
+            function updateStatus(id, status)
+            {
+                const card = document.getElementById("session-" + id);
+                if (!card)
+                {
+                    return;
+                }
 
-                socket.on("qr", function (data) {
-                    $(`.client.${data.id} #qrcode`).attr("src", data.src).show();
-                });
+                card.dataset.status = status;
+                const badge = card.querySelector(".badge");
+                badge.className = "badge " + status;
+                badge.innerHTML = '<span class="dot"></span>' + statusText(status);
 
-                socket.on("ready", function (data) {
-                    $(`.client.${data.id} #qrcode`).hide();
-                });
+                const qrWrap = card.querySelector(".qr-wrap");
+                const hint = card.querySelector(".qr-hint");
 
-                socket.on("authenticated", function (data) {
-                    $(`.client.${data.id} #qrcode`).hide();
-                });
+                if (status === "ready" || status === "authenticated")
+                {
+                    qrWrap.classList.remove("show");
+                    hint.textContent = "";
+                }
+
+                refreshStats();
+            }
+
+            socket.on("init", function (sessions)
+            {
+                grid.innerHTML = "";
+                sessions.forEach(renderCard);
+                refreshStats();
             });
+
+            socket.on("session-added", function (session)
+            {
+                if (!document.getElementById("session-" + session.id))
+                {
+                    renderCard({ id: session.id, description: session.description, status: "initializing" });
+                }
+            });
+
+            socket.on("qr", function (data)
+            {
+                const card = document.getElementById("session-" + data.id);
+                if (!card)
+                {
+                    return;
+                }
+
+                const qrWrap = card.querySelector(".qr-wrap");
+                qrWrap.querySelector("img").src = data.src;
+                qrWrap.classList.add("show");
+                card.querySelector(".qr-hint").textContent = i18n.t("qr.hint");
+            });
+
+            socket.on("status", function (data)
+            {
+                updateStatus(data.id, data.status);
+            });
+
+            socket.on("remove-session", function (id)
+            {
+                const card = document.getElementById("session-" + id);
+                if (card)
+                {
+                    card.remove();
+                    refreshStats();
+                    toast(i18n.t("toast.sessionRemoved", { id: id }));
+                }
+            });
+
+            socket.on("message", function (data)
+            {
+                if (data && data.text)
+                {
+                    toast(data.text, true);
+                }
+            });
+
+            document.getElementById("client-id").addEventListener("input", function (e)
+            {
+                e.target.value = e.target.value.replace(/[^a-zA-Z0-9_-]/g, "");
+            });
+
+            function todayDescription()
+            {
+                const now = new Date();
+                return now.getFullYear() + "-" +
+                    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(now.getDate()).padStart(2, "0");
+            }
+
+            document.getElementById("create-form").addEventListener("submit", function (e)
+            {
+                e.preventDefault();
+                const id = document.getElementById("client-id").value.trim();
+
+                if (!id)
+                {
+                    toast(i18n.t("toast.sessionIdRequired"), true);
+                    return;
+                }
+
+                if (document.getElementById("session-" + id))
+                {
+                    toast(i18n.t("toast.sessionIdUsed"), true);
+                    return;
+                }
+
+                socket.emit("create-session", { id: id, description: todayDescription() });
+                e.target.reset();
+            });
+
+            async function loadUser()
+            {
+                try
+                {
+                    const res = await fetch("/me");
+                    const json = await res.json();
+                    if (!json.status)
+                    {
+                        return;
+                    }
+
+                    const box = document.getElementById("sidebar-user");
+                    const avatar = document.createElement("img");
+                    avatar.className = "user-avatar";
+                    avatar.src = json.user.avatar || "";
+                    avatar.alt = "";
+
+                    const info = document.createElement("div");
+                    info.className = "user-info";
+                    const name = document.createElement("div");
+                    name.className = "user-name";
+                    name.textContent = json.user.name || json.user.email;
+                    const logout = document.createElement("button");
+                    logout.className = "user-logout";
+                    logout.setAttribute("data-i18n", "user.logout");
+                    logout.textContent = i18n.t("user.logout");
+                    logout.addEventListener("click", async function ()
+                    {
+                        await fetch("/auth/logout", { method: "POST" });
+                        window.location.href = "/login";
+                    });
+
+                    info.appendChild(name);
+                    info.appendChild(logout);
+                    box.appendChild(avatar);
+                    box.appendChild(info);
+                }
+                catch (err)
+                {
+                    return;
+                }
+            }
+
+            loadUser();
         </script>
     </body>
 </html>

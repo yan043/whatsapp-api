@@ -1,258 +1,416 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Broadcast - WhatsApp API</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-        <link id="favicon" rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <title>Siaran · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/icon-font.min.css" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/core.css" />
-        <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
-
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
         <style>
-            body {
-                font-family: "Inter", sans-serif;
-                background: #f7f9fa;
-                min-height: 100vh;
-            }
-            .support-banner {
-                width: 100%;
-                background: #eaf6fb;
-                color: #3498db;
-                padding: 10px 0;
-                text-align: center;
-                font-weight: 500;
-                overflow: hidden;
-                position: relative;
-            }
-            .support-banner span {
-                display: inline-block;
-                animation: marquee 12s linear infinite;
-            }
-            @keyframes marquee {
-                0% {
-                    transform: translateX(100%);
-                }
-                100% {
-                    transform: translateX(-100%);
-                }
-            }
-            .broadcast-box {
-                background: #fff;
+            .select2-container--default .select2-selection--single
+            {
+                background: var(--surface-2, #1c1f26);
+                border: 1px solid var(--border, #2a2f3a);
                 border-radius: 10px;
-                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-                padding: 20px 16px 16px 16px;
-                margin: 20px 0;
-            }
-            .broadcast-title {
-                color: #3498db;
-                font-weight: 700;
-                margin-bottom: 18px;
-                letter-spacing: 1px;
-            }
-            .icon-broadcast {
-                font-size: 48px;
-                color: #3498db;
-                margin-bottom: 10px;
-            }
-            .input-group.custom {
-                margin-bottom: 18px;
-            }
-            .btn-info {
-                background: #3498db;
-                border: none;
-                font-weight: 600;
-                letter-spacing: 1px;
-            }
-            .btn-info:hover {
-                background: #217dbb;
-            }
-            .wa-preview-container {
-                background: #ece5dd;
-                border-radius: 10px;
-                padding: 24px 12px;
-                min-height: 420px;
-                box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                position: relative;
-                height: 100%;
-                justify-content: center;
-            }
-            .wa-chat-header {
-                width: 100%;
-                background: #075e54;
-                color: #fff;
-                border-radius: 8px 8px 0 0;
-                padding: 10px 14px;
-                margin-bottom: 16px;
+                height: 44px;
                 display: flex;
                 align-items: center;
             }
-            .wa-chat-header .icon {
-                font-size: 22px;
-                margin-right: 10px;
+            .select2-container--default .select2-selection--single .select2-selection__rendered
+            {
+                color: var(--text, #e7e9ee);
+                line-height: 44px;
+                padding-left: 12px;
             }
-            .wa-chat-header .wa-title {
-                font-weight: 600;
-                font-size: 16px;
-                letter-spacing: 1px;
+            .select2-container--default .select2-selection--single .select2-selection__arrow
+            {
+                height: 42px;
             }
-            .wa-bubble {
-                background: #dcf8c6;
-                border-radius: 8px 8px 0 8px;
-                padding: 10px 14px 22px 14px;
-                margin-bottom: 8px;
-                max-width: 80%;
-                word-break: break-word;
-                box-shadow: 0 1px 2px rgba(7, 94, 84, 0.08);
-                position: relative;
-                font-size: 15px;
-                color: #222;
-                text-align: left;
-                min-width: 120px;
-                min-height: 44px;
+            .select2-dropdown
+            {
+                background: var(--surface-2, #1c1f26);
+                border: 1px solid var(--border, #2a2f3a);
+                color: var(--text, #e7e9ee);
             }
-            .wa-bubble img {
-                max-width: 180px;
-                border-radius: 6px;
-                display: block;
-                margin-bottom: 8px;
-                background: #fff;
-                border: 1px solid #eee;
+            .select2-container--default .select2-results__option--highlighted[aria-selected]
+            {
+                background: var(--accent, #22c55e);
             }
-            .wa-bubble .wa-time {
-                font-size: 11px;
-                color: #888;
-                position: absolute;
-                right: 12px;
-                bottom: 6px;
-                background: transparent;
-                z-index: 2;
-                padding-left: 8px;
+            .select2-search--dropdown .select2-search__field
+            {
+                background: var(--surface, #14171d);
+                border: 1px solid var(--border, #2a2f3a);
+                color: var(--text, #e7e9ee);
             }
-            @media (max-width: 991px) {
-                .broadcast-box,
-                .wa-preview-container {
-                    margin: 20px 0;
-                }
-                .wa-preview-container {
-                    min-height: 320px;
-                }
+            .dropzone
+            {
+                border: 2px dashed var(--border, #2a2f3a);
+                border-radius: 12px;
+                padding: 22px;
+                text-align: center;
+                color: var(--text-muted, #8b93a3);
+                cursor: pointer;
+                transition: border-color 0.2s, background 0.2s;
             }
-            @media (max-width: 767px) {
-                .wa-preview-container {
-                    min-height: 220px;
-                    padding: 12px 4px;
-                }
-                .broadcast-box {
-                    padding: 18px 8px 14px 8px;
-                }
+            .dropzone.dragover
+            {
+                border-color: var(--accent, #22c55e);
+                background: rgba(34, 197, 94, 0.08);
+            }
+            .dropzone .dz-thumb
+            {
+                max-width: 120px;
+                max-height: 120px;
+                border-radius: 8px;
+                margin-top: 10px;
+                display: none;
             }
         </style>
     </head>
     <body>
-        <header>
-            <div class="support-banner">
-                <span>
-                    You can support the maintainer of this project through
-                    <b>DANA +6285248804480</b> — Thanks Before :)
-                </span>
-            </div>
-        </header>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-logo">💬</div>
+                    <div class="brand-text">
+                        <h1>WA Gateway</h1>
+                        <span data-i18n="brand.subtitle">Multi-Session API</span>
+                    </div>
+                </div>
+                <a href="/" class="nav-link"><span class="nav-icon">🔗</span> <span data-i18n="nav.connection">Koneksi</span></a>
+                <a href="/crm" class="nav-link"><span class="nav-icon">💼</span> <span data-i18n="nav.crm">CRM</span></a>
+                <a href="/broadcast" class="nav-link active"><span class="nav-icon">📢</span> <span data-i18n="nav.broadcast">Siaran</span></a>
+                <a href="/templates-page" class="nav-link"><span class="nav-icon">📝</span> <span data-i18n="nav.templates">Templat</span></a>
+                <a href="/bot-page" class="nav-link"><span class="nav-icon">🤖</span> <span data-i18n="nav.bot">Bot</span></a>
+                <div class="sidebar-footer">
+                    &copy; <span id="year"></span> <a href="https://github.com/yan043" target="_blank" rel="noopener noreferrer">yan043</a>
+                </div>
+            </aside>
 
-        <div class="container h-100">
-            <div class="row justify-content-center align-items-center h-100" style="min-height: 100vh;">
-                <div class="col-lg-6 d-flex align-items-center">
-                    <div class="broadcast-box w-100">
-                        <div class="text-center">
-                            <div class="icon-broadcast">
-                                <span class="icon-copy"></span>
-                            </div>
-                            <h2 class="broadcast-title">WhatsApp Broadcast</h2>
+            <main class="main">
+                <div class="topbar">
+                    <div class="topbar-user" id="sidebar-user"></div>
+                    <div class="topbar-right">
+                        <div class="lang-options">
+                            <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
                         </div>
-                        <form id="broadcast-form" enctype="multipart/form-data" class="mt-3">
-                            <div class="input-group custom">
-                                <input type="text" class="form-control" name="sender" placeholder="Sender ID" required />
+                        <div class="page-clock">
+                            <div class="clock-date" id="clock-date"></div>
+                            <div class="clock-time" id="clock-time"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-head">
+                    <div>
+                        <h2 data-i18n="page.broadcast.title">Siaran</h2>
+                        <p data-i18n="page.broadcast.subtitle">Kirim pesan atau media ke banyak nomor dengan jeda aman di antara tiap pengiriman.</p>
+                    </div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="stat.totalSent">Total Terkirim</div>
+                        <div class="stat-value" id="stat-total">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="stat.success">Berhasil</div>
+                        <div class="stat-value stat-success" id="stat-success">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="stat.failed">Gagal</div>
+                        <div class="stat-value stat-failed" id="stat-failed">0</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.composeMessage">📤 Tulis Pesan</h3>
+                        <form id="broadcast-form">
+                            <div class="field">
+                                <label data-i18n="label.senderSession">Sesi Pengirim</label>
+                                <select class="select" name="sender" id="sender-select" required>
+                                    <option value="" data-i18n="opt.loadingSessions">Memuat sesi...</option>
+                                </select>
                             </div>
-                            <div class="input-group custom">
-                                <textarea class="form-control client-description" name="numbers" rows="3" placeholder="List numbers, separated by commas" required></textarea>
+                            <div class="field">
+                                <label data-i18n="label.recipients">Nomor Penerima</label>
+                                <textarea class="textarea" name="numbers" id="numbers" placeholder="6281234567890, 6289876543210" required></textarea>
                             </div>
-                            <div class="input-group custom">
-                                <textarea class="form-control client-description" name="message" id="wa-message" rows="3" placeholder="Message Content" required></textarea>
+                            <div class="field">
+                                <label data-i18n="label.messageTemplate">Templat Pesan</label>
+                                <select class="select" id="template-select">
+                                    <option value="" data-i18n="opt.noTemplate">— Tanpa templat —</option>
+                                </select>
                             </div>
-                            <div class="input-group custom">
-                                <input type="file" name="media" id="wa-media" accept="image/*" class="form-control-file" />
+                            <div class="field">
+                                <label data-i18n="label.message">Pesan</label>
+                                <textarea class="textarea" name="message" id="wa-message" data-i18n-placeholder="placeholder.message" placeholder="Tulis pesan Anda... *tebal* _miring_"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="wa-delay" class="font-weight-bold text-dark">Delay Between Messages <small class="text-muted">(seconds/message)</small></label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text text-white font-weight-bold" style="background-color: #3498db;">Delay</span>
-                                    </div>
-                                    <input type="number" min="1" max="60" class="form-control" name="delay" id="wa-delay" value="30" required />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">seconds</span>
-                                    </div>
+                            <div class="field">
+                                <label data-i18n="label.attachImage">Lampirkan Gambar (opsional)</label>
+                                <div class="dropzone" id="dropzone">
+                                    <div id="dz-text" data-i18n="dropzone.text">Seret &amp; lepas gambar di sini, atau klik untuk memilih</div>
+                                    <img class="dz-thumb" id="dz-thumb" alt="thumbnail" />
                                 </div>
-                                <small class="form-text text-muted">Set the delay between broadcast messages to avoid being flagged as spam.</small>
+                                <button type="button" class="btn btn-danger btn-block" id="clear-image" style="display:none;margin-top:10px" data-i18n="btn.removeImage">🗑️ Hapus Gambar</button>
+                                <input type="file" name="media" id="wa-media" accept="image/*" hidden />
                             </div>
-
-                            <button type="submit" class="btn btn-info btn-lg btn-block mt-2"><span class="icon-paper-plane"></span> Send Broadcast</button>
+                            <div class="field">
+                                <label data-i18n="label.delay">Jeda Antar Pesan (detik)</label>
+                                <input class="input" type="number" name="delay" id="wa-delay" min="1" max="300" value="30" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" id="send-btn" data-i18n="btn.sendBroadcast">📢 Kirim Siaran</button>
+                            <div class="progress-bar" id="progress"><div class="progress-fill" id="progress-fill"></div></div>
                         </form>
-                        <footer>
-                            <p class="text-muted mt-4 mb-0 text-center">
-                                <small>
-                                    &copy; <span id="year"></span> author by
-                                    <a href="https://github.com/yan043" style="color: #6c757d !important;">Mahdian</a>
-                                </small>
-                            </p>
-                        </footer>
                     </div>
-                </div>
-                <div class="col-lg-6 d-flex align-items-center h-100" style="height: 84% !important;">
-                    <div class="wa-preview-container w-100">
-                        <div class="wa-chat-header">
-                            <span class="icon icon-whatsapp"></span>
-                            <span class="wa-title">WhatsApp Broadcast</span>
-                        </div>
-                        <div class="wa-bubble" id="wa-preview-bubble">
-                            <img src="" id="wa-preview-img" style="display: none;" alt="Preview Media" />
-                            <span id="wa-preview-text">Your message will appear here...</span>
-                            <span class="wa-time" id="wa-preview-time"></span>
+
+                    <div class="card">
+                        <h3 class="card-title" data-i18n="card.livePreview">👁️ Pratinjau Langsung</h3>
+                        <div class="wa-preview">
+                            <div class="wa-header">
+                                <div class="wa-avatar">W</div>
+                                <div>
+                                    <div class="wa-name" data-i18n="wa.broadcastName">Siaran WhatsApp</div>
+                                    <div class="wa-sub" data-i18n="wa.online">daring</div>
+                                </div>
+                            </div>
+                            <div class="wa-bubble">
+                                <img id="wa-preview-img" alt="Preview" />
+                                <span id="wa-preview-text" data-i18n="wa.previewPlaceholder">Pesan Anda akan tampil di sini...</span>
+                                <span class="wa-time" id="wa-preview-time"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="resultModalLabel">Broadcast Results</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body" id="modal-result"></div>
+                <div class="card" id="result-card" style="display:none;margin-top:22px">
+                    <h3 class="card-title" data-i18n="card.broadcastResult">📊 Hasil Siaran</h3>
+                    <div id="result-body"></div>
                 </div>
-            </div>
+
+                <div class="card" style="margin-top:22px">
+                    <h3 class="card-title" data-i18n="card.usage7days">📈 Penggunaan — 7 Hari Terakhir</h3>
+                    <canvas id="trend-chart" height="110"></canvas>
+                </div>
+            </main>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="toast-wrap" id="toast-wrap"></div>
 
+        <script src="/assets/js/i18n.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script>
             document.getElementById("year").textContent = new Date().getFullYear();
 
-            function formatWhatsapp(text) {
-                text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                text = text.replace(/\*([^\*]+)\*/g, "<b>$1</b>");
+            function startClock()
+            {
+                const dateEl = document.getElementById("clock-date");
+                const timeEl = document.getElementById("clock-time");
+                if (!dateEl || !timeEl)
+                {
+                    return;
+                }
+
+                const dateFmt = new Intl.DateTimeFormat("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+
+                const tick = function ()
+                {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, "0");
+                    const mm = String(now.getMinutes()).padStart(2, "0");
+                    const ss = String(now.getSeconds()).padStart(2, "0");
+                    dateEl.textContent = dateFmt.format(now);
+                    timeEl.textContent = hh + ":" + mm + ":" + ss;
+                };
+
+                tick();
+                setInterval(tick, 1000);
+            }
+
+            startClock();
+
+            function toast(message, isError)
+            {
+                const el = document.createElement("div");
+                el.className = "toast" + (isError ? " error" : "");
+                el.textContent = message;
+                document.getElementById("toast-wrap").appendChild(el);
+                setTimeout(() => el.remove(), 3500);
+            }
+
+            async function loadSenders()
+            {
+                const select = document.getElementById("sender-select");
+
+                try
+                {
+                    const res = await fetch("/sessions");
+                    const json = await res.json();
+                    const ready = (json.sessions || []).filter((s) => s.status === "ready");
+
+                    if (!ready.length)
+                    {
+                        select.innerHTML = '<option value="">' + escapeAttr(i18n.t("opt.noConnectedSession")) + '</option>';
+                        return;
+                    }
+
+                    select.innerHTML =
+                        '<option value="">' + escapeAttr(i18n.t("opt.selectSender")) + '</option>' +
+                        ready
+                            .map((s) => '<option value="' + escapeAttr(s.id) + '">' + escapeAttr(s.id) + " — " + escapeAttr(s.phone || "tanpa nomor") + "</option>")
+                            .join("");
+
+                    $(select).select2({ width: "100%", placeholder: i18n.t("opt.selectSender") });
+                }
+                catch (err)
+                {
+                    select.innerHTML = '<option value="">' + escapeAttr(i18n.t("opt.loadSendersFailed")) + '</option>';
+                }
+            }
+
+            function escapeAttr(value)
+            {
+                const div = document.createElement("div");
+                div.textContent = value == null ? "" : value;
+                return div.innerHTML;
+            }
+
+            loadSenders();
+
+            let templates = [];
+            let templateImageUrl = "";
+            let templateButtons = [];
+            const templateSelect = document.getElementById("template-select");
+
+            function parseButtons(raw)
+            {
+                if (!raw)
+                {
+                    return [];
+                }
+
+                try
+                {
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                }
+                catch (err)
+                {
+                    return [];
+                }
+            }
+
+            async function loadTemplates()
+            {
+                try
+                {
+                    const res = await fetch("/templates");
+                    const json = await res.json();
+                    templates = json.templates || [];
+                }
+                catch (err)
+                {
+                    templates = [];
+                }
+
+                templateSelect.innerHTML =
+                    '<option value="">' + escapeAttr(i18n.t("opt.noTemplate")) + '</option>' +
+                    templates.map((t) => '<option value="' + escapeAttr(String(t.id)) + '">' + escapeAttr(t.title) + "</option>").join("");
+
+                $(templateSelect).select2({ width: "100%", placeholder: i18n.t("opt.noTemplate"), allowClear: true });
+
+                $(templateSelect).on("change", function ()
+                {
+                    const selected = templates.find((t) => String(t.id) === templateSelect.value);
+                    if (selected)
+                    {
+                        msgInput.value = selected.body;
+                        templateImageUrl = selected.image || "";
+                        templateButtons = parseButtons(selected.buttons);
+                        imgInput.value = "";
+
+                        if (templateImageUrl)
+                        {
+                            showTemplateImage(templateImageUrl);
+                        }
+                        else
+                        {
+                            clearImage();
+                        }
+
+                        updatePreview();
+                    }
+                    else
+                    {
+                        templateImageUrl = "";
+                        templateButtons = [];
+                        clearImage();
+                        updatePreview();
+                    }
+                });
+            }
+
+            loadTemplates();
+
+            async function loadUser()
+            {
+                try
+                {
+                    const res = await fetch("/me");
+                    const json = await res.json();
+                    if (!json.status)
+                    {
+                        return;
+                    }
+
+                    const box = document.getElementById("sidebar-user");
+                    const avatar = document.createElement("img");
+                    avatar.className = "user-avatar";
+                    avatar.src = json.user.avatar || "";
+                    avatar.alt = "";
+
+                    const info = document.createElement("div");
+                    info.className = "user-info";
+                    const name = document.createElement("div");
+                    name.className = "user-name";
+                    name.textContent = json.user.name || json.user.email;
+                    const logout = document.createElement("button");
+                    logout.className = "user-logout";
+                    logout.setAttribute("data-i18n", "user.logout");
+                    logout.textContent = i18n.t("user.logout");
+                    logout.addEventListener("click", async function ()
+                    {
+                        await fetch("/auth/logout", { method: "POST" });
+                        window.location.href = "/login";
+                    });
+
+                    info.appendChild(name);
+                    info.appendChild(logout);
+                    box.appendChild(avatar);
+                    box.appendChild(info);
+                }
+                catch (err)
+                {
+                    return;
+                }
+            }
+
+            loadUser();
+
+            function formatWhatsapp(text)
+            {
+                text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                text = text.replace(/\*([^*]+)\*/g, "<b>$1</b>");
                 text = text.replace(/_([^_]+)_/g, "<i>$1</i>");
                 text = text.replace(/\n/g, "<br>");
                 return text;
@@ -264,85 +422,345 @@
             const previewImg = document.getElementById("wa-preview-img");
             const previewTime = document.getElementById("wa-preview-time");
 
-            function updatePreview() {
-                let val = msgInput.value.trim();
-                if (!val) {
-                    previewText.innerHTML = "Your message will appear here...";
-                } else {
-                    previewText.innerHTML = formatWhatsapp(val);
+            function buttonsMenuHtml(buttons)
+            {
+                if (!buttons.length)
+                {
+                    return "";
                 }
+
+                const lines = buttons.map(function (btn, index)
+                {
+                    const text = btn.type === "url" && btn.url ? btn.label + ": " + btn.url : btn.label;
+                    return formatWhatsapp((index + 1) + ". " + text);
+                });
+                return "<br><br>" + lines.join("<br>");
+            }
+
+            function updatePreview()
+            {
+                const val = msgInput.value.trim();
+                previewText.innerHTML = val ? formatWhatsapp(val) + buttonsMenuHtml(templateButtons) : i18n.t("wa.previewPlaceholder");
                 const now = new Date();
-                const jam = now.getHours().toString().padStart(2, "0");
-                const menit = now.getMinutes().toString().padStart(2, "0");
-                previewTime.textContent = jam + ":" + menit;
+                previewTime.textContent =
+                    now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
             }
 
             msgInput.addEventListener("input", updatePreview);
 
-            imgInput.addEventListener("change", function () {
-                if (imgInput.files && imgInput.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewImg.src = e.target.result;
-                        previewImg.style.display = "block";
-                    };
-                    reader.readAsDataURL(imgInput.files[0]);
-                } else {
-                    previewImg.src = "";
-                    previewImg.style.display = "none";
+            const dropzone = document.getElementById("dropzone");
+            const dzText = document.getElementById("dz-text");
+            const dzThumb = document.getElementById("dz-thumb");
+            const clearBtn = document.getElementById("clear-image");
+
+            function showImage(file)
+            {
+                if (!file || !file.type.startsWith("image/"))
+                {
+                    toast(i18n.t("toast.imageOnly"), true);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e)
+                {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = "block";
+                    dzThumb.src = e.target.result;
+                    dzThumb.style.display = "inline-block";
+                    dzText.textContent = file.name;
+                    clearBtn.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function showTemplateImage(url)
+            {
+                previewImg.src = url;
+                previewImg.style.display = "block";
+                dzThumb.src = url;
+                dzThumb.style.display = "inline-block";
+                dzText.textContent = i18n.t("dz.templateImage");
+                clearBtn.style.display = "block";
+            }
+
+            function clearImage()
+            {
+                imgInput.value = "";
+                templateImageUrl = "";
+                previewImg.src = "";
+                previewImg.style.display = "none";
+                dzThumb.src = "";
+                dzThumb.style.display = "none";
+                dzText.textContent = i18n.t("dropzone.text");
+                clearBtn.style.display = "none";
+            }
+
+            clearBtn.addEventListener("click", clearImage);
+
+            dropzone.addEventListener("click", () => imgInput.click());
+
+            imgInput.addEventListener("change", function ()
+            {
+                if (imgInput.files && imgInput.files[0])
+                {
+                    showImage(imgInput.files[0]);
+                }
+            });
+
+            ["dragenter", "dragover"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.add("dragover");
+                })
+            );
+
+            ["dragleave", "drop"].forEach((evt) =>
+                dropzone.addEventListener(evt, (e) =>
+                {
+                    e.preventDefault();
+                    dropzone.classList.remove("dragover");
+                })
+            );
+
+            dropzone.addEventListener("drop", function (e)
+            {
+                const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                if (file)
+                {
+                    imgInput.files = e.dataTransfer.files;
+                    showImage(file);
                 }
             });
 
             updatePreview();
+            setInterval(updatePreview, 30000);
 
-            document.getElementById("broadcast-form").addEventListener("submit", async function (e) {
+            let trendChart = null;
+
+            async function loadSummary()
+            {
+                try
+                {
+                    const res = await fetch("/stats/summary");
+                    const json = await res.json();
+                    if (!json.status)
+                    {
+                        return;
+                    }
+
+                    document.getElementById("stat-total").textContent = json.total;
+                    document.getElementById("stat-success").textContent = json.success;
+                    document.getElementById("stat-failed").textContent = json.failed;
+                }
+                catch (err)
+                {
+                    return;
+                }
+            }
+
+            function buildLast7Days()
+            {
+                const days = [];
+                for (let i = 6; i >= 0; i--)
+                {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    days.push(d.toISOString().slice(0, 10));
+                }
+                return days;
+            }
+
+            async function loadTrend()
+            {
+                let daily = [];
+
+                try
+                {
+                    const res = await fetch("/stats/daily");
+                    const json = await res.json();
+                    daily = json.daily || [];
+                }
+                catch (err)
+                {
+                    daily = [];
+                }
+
+                const days = buildLast7Days();
+                const successByDay = {};
+                const failedByDay = {};
+
+                daily.forEach((row) =>
+                {
+                    const key = String(row.day).slice(0, 10);
+                    successByDay[key] = row.success;
+                    failedByDay[key] = row.failed;
+                });
+
+                const successData = days.map((d) => successByDay[d] || 0);
+                const failedData = days.map((d) => failedByDay[d] || 0);
+                const labels = days.map((d) => d.slice(5));
+
+                if (trendChart)
+                {
+                    trendChart.data.labels = labels;
+                    trendChart.data.datasets[0].data = successData;
+                    trendChart.data.datasets[1].data = failedData;
+                    trendChart.update();
+                    return;
+                }
+
+                const ctx = document.getElementById("trend-chart").getContext("2d");
+                trendChart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: i18n.t("chart.success"),
+                                data: successData,
+                                borderColor: "#22c55e",
+                                backgroundColor: "rgba(34,197,94,0.15)",
+                                tension: 0.3,
+                                fill: true,
+                            },
+                            {
+                                label: i18n.t("chart.failed"),
+                                data: failedData,
+                                borderColor: "#ef4444",
+                                backgroundColor: "rgba(239,68,68,0.15)",
+                                tension: 0.3,
+                                fill: true,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { labels: { color: "#8b93a3" } } },
+                        scales: {
+                            x: { ticks: { color: "#8b93a3" }, grid: { color: "rgba(139,147,163,0.1)" } },
+                            y: { beginAtZero: true, ticks: { color: "#8b93a3" }, grid: { color: "rgba(139,147,163,0.1)" } },
+                        },
+                    },
+                });
+            }
+
+            loadSummary();
+            loadTrend();
+
+            document.getElementById("broadcast-form").addEventListener("submit", async function (e)
+            {
                 e.preventDefault();
                 const form = e.target;
-                const formData = new FormData(form);
+                const btn = document.getElementById("send-btn");
+                const progress = document.getElementById("progress");
+                const fill = document.getElementById("progress-fill");
 
-                let fileUrl = "";
-                if (form.media.files.length > 0) {
-                    const uploadData = new FormData();
-                    uploadData.append("file", form.media.files[0]);
-                    const uploadRes = await fetch("/upload", { method: "POST", body: uploadData });
-                    const uploadJson = await uploadRes.json();
-                    fileUrl = uploadJson.url;
+                if (!form.sender.value)
+                {
+                    toast(i18n.t("toast.selectSender"), true);
+                    return;
                 }
 
-                const payload = {
-                    sender: form.sender.value,
-                    numbers: form.numbers.value,
-                    message: form.message.value,
-                    file: fileUrl,
-                    delay: parseInt(form.delay.value) || 2,
-                };
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spin"></span> ' + i18n.t("btn.sending");
+                progress.classList.add("show");
+                fill.style.width = "20%";
 
-                const res = await fetch("/broadcast", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                });
-                const json = await res.json();
+                try
+                {
+                    let fileUrl = "";
 
-                let html = "";
-                if (json.status) {
-                    html += `<div class="alert alert-success mb-2">Broadcast completed! Results:</div>`;
-                    html += `<ul class="list-group">`;
-                    json.results.forEach((r) => {
-                        html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-            <span><b>${r.number}</b> <small class="text-muted">${r.status ? "✅" : "❌"}</small></span>
-            <span class="badge badge-${r.status ? "success" : "danger"} badge-pill">${r.message}</span>
-          </li>`;
+                    if (form.media.files.length > 0)
+                    {
+                        const uploadData = new FormData();
+                        uploadData.append("file", form.media.files[0]);
+                        const uploadRes = await fetch("/upload", { method: "POST", body: uploadData });
+                        const uploadJson = await uploadRes.json();
+                        if (!uploadJson.status)
+                        {
+                            throw new Error(uploadJson.message || i18n.t("toast.uploadFailed"));
+                        }
+                        fileUrl = uploadJson.url;
+                    }
+                    else if (templateImageUrl)
+                    {
+                        fileUrl = templateImageUrl;
+                    }
+
+                    fill.style.width = "55%";
+
+                    const payload = {
+                        sender: form.sender.value,
+                        numbers: form.numbers.value,
+                        message: form.message.value,
+                        buttons: templateButtons,
+                        file: fileUrl,
+                        delay: parseInt(form.delay.value) || 30,
+                    };
+
+                    const res = await fetch("/broadcast", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
                     });
-                    html += `</ul>`;
-                } else {
-                    html += `<div class="alert alert-danger">${json.message || "An error occurred."}</div>`;
+                    const json = await res.json();
+                    fill.style.width = "100%";
+
+                    const card = document.getElementById("result-card");
+                    const body = document.getElementById("result-body");
+
+                    if (json.status && json.results)
+                    {
+                        const ok = json.results.filter((r) => r.status).length;
+                        let html = '<p style="color:var(--text-muted);margin:0 0 14px">' + escapeAttr(i18n.t("result.sentSummary", { ok: ok, total: json.results.length })) + "</p>";
+                        json.results.forEach((r) =>
+                        {
+                            const safeNum = String(r.number).replace(/[<>&]/g, "");
+                            const safeMsg = escapeAttr(r.message);
+                            html +=
+                                '<div class="result-row"><span class="num">' + safeNum + "</span>" +
+                                '<span class="badge ' + (r.status ? "ready" : "offline") + '"><span class="dot"></span>' + safeMsg + "</span></div>";
+                        });
+                        body.innerHTML = html;
+                    }
+                    else
+                    {
+                        body.innerHTML = '<div class="result-row"><span>' + escapeAttr(json.message || i18n.t("result.errorOccurred")) + "</span></div>";
+                    }
+
+                    card.style.display = "block";
+                    card.scrollIntoView({ behavior: "smooth", block: "start" });
+
+                    loadSummary();
+                    loadTrend();
                 }
-                document.getElementById("modal-result").innerHTML = html;
-                $("#resultModal").modal("show");
+                catch (err)
+                {
+                    toast(err.message || i18n.t("toast.broadcastFailed"), true);
+                }
+                finally
+                {
+                    btn.disabled = false;
+                    btn.innerHTML = i18n.t("btn.sendBroadcast");
+                    setTimeout(() => { progress.classList.remove("show"); fill.style.width = "0%"; }, 600);
+                }
             });
 
-            setInterval(updatePreview, 10000);
+            document.addEventListener("languagechange", function ()
+            {
+                loadSenders();
+                loadTemplates();
+                updatePreview();
+
+                if (trendChart)
+                {
+                    trendChart.data.datasets[0].label = i18n.t("chart.success");
+                    trendChart.data.datasets[1].label = i18n.t("chart.failed");
+                    trendChart.update();
+                }
+            });
         </script>
     </body>
 </html>

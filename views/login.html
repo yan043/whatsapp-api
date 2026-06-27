@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Masuk · WhatsApp API Gateway</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="/assets/icon/favicon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
+        <style>
+            .login-wrap
+            {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .login-card
+            {
+                background: var(--surface, #ffffff);
+                border: 1px solid var(--border, #e4e9f2);
+                border-radius: 18px;
+                padding: 44px 40px;
+                max-width: 380px;
+                width: 100%;
+                text-align: center;
+                box-shadow: 0 16px 44px rgba(22, 32, 58, 0.10);
+            }
+            .login-logo
+            {
+                width: 66px;
+                height: 66px;
+                margin: 0 auto 18px;
+                border-radius: 16px;
+                background: var(--grad-brand, linear-gradient(135deg, #2563eb, #1d4ed8));
+                display: grid;
+                place-items: center;
+                font-size: 34px;
+                box-shadow: 0 8px 20px rgba(37, 99, 235, 0.30);
+            }
+            .login-card h1
+            {
+                font-size: 24px;
+                font-weight: 800;
+                margin: 0 0 6px;
+                letter-spacing: -0.01em;
+                color: var(--text, #16203a);
+            }
+            .login-card p
+            {
+                color: var(--text-muted, #7b86a8);
+                font-size: 14px;
+                margin: 0 0 28px;
+            }
+            .google-btn
+            {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                padding: 13px;
+                background: #fff;
+                color: #1f2937;
+                border: 1px solid var(--border, #e6ecf7);
+                border-radius: 12px;
+                font-weight: 600;
+                text-decoration: none;
+                box-shadow: 0 6px 16px rgba(31, 39, 71, 0.08);
+                transition: transform 0.18s ease, box-shadow 0.2s ease;
+            }
+            .google-btn:hover
+            {
+                border-color: var(--accent, #2563eb);
+                box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+            }
+            .google-btn img
+            {
+                width: 20px;
+                height: 20px;
+            }
+            .login-lang
+            {
+                display: flex;
+                justify-content: center;
+                gap: 6px;
+                margin-bottom: 22px;
+            }
+            .login-lang .lang-btn
+            {
+                padding: 6px 16px;
+                border: 1px solid var(--border, #e6ecf7);
+                border-radius: 10px;
+                background: #fff;
+                color: var(--text-muted, #7b86a8);
+                font-weight: 700;
+                font-size: 13px;
+                cursor: pointer;
+                transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+            }
+            .login-lang .lang-btn:hover
+            {
+                transform: translateY(-1px);
+            }
+            .login-lang .lang-btn.active
+            {
+                background: var(--accent, #2563eb);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-wrap">
+            <div class="login-card">
+                <div class="login-lang">
+                    <button type="button" class="lang-btn" data-lang-btn="id">ID</button>
+                    <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+                </div>
+                <div class="login-logo">💬</div>
+                <h1 data-i18n="login.title">WA Gateway</h1>
+                <p data-i18n="login.subtitle">Masuk untuk mengelola sesi dan siaran WhatsApp Anda.</p>
+                <a class="google-btn" href="/auth/google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />
+                    <span data-i18n="login.google">Lanjutkan dengan Google</span>
+                </a>
+            </div>
+        </div>
+        <script src="/assets/js/i18n.js"></script>
+    </body>
+</html>
